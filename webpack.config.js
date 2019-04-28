@@ -80,7 +80,7 @@ builder.beforeBuilder((config, env, options) => {
     }
 });
 
-// builder.useHtmlPlugin(path.resolve(__dirname, "src/html"), option.scripts, option.css);
+option.htmlTemplate && builder.useHtmlPlugin(path.resolve(__dirname, "src/html"), option.scripts, option.css);
 option.typeCheck && builder.usePlugin(new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true
 }));

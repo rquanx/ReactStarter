@@ -1,4 +1,5 @@
 let config = {
+        htmlTemplate: false,
         // 是否打包mock
         mock: false,
         // 是否打包polyfill
