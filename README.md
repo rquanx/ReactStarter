@@ -35,6 +35,7 @@ cnpm run lint
 在业务代码里进行使用的第三方库使用指令：cnpm i -S name
 
 #### 目录结构
+```js
  ├──config     // 打包配置
  ├──script     // 打包脚本
  ├──src
@@ -56,3 +57,4 @@ cnpm run lint
  ├──tsconfig.json // TypeScript编译设置
  ├──tslint.json     // 代码规范选项
  └──webpack.config.js   // webpack打包配置文件
+ ```
