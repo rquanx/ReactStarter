@@ -13,27 +13,28 @@ cnpm i
 
 #### 打包指令  
 cnpm run buildDll
-    进行Dll打包，当打包配置中的dll有变化时需重新打包
+   > 进行Dll打包，当打包配置中的dll有变化时需重新打包
 
 cnpm run build
-    开发打包不进行代码压缩,开发打包会引用dll
-        打包配置中的htmlTemplate.enable为false关闭可提高打包速度
+   > 开发打包不进行代码压缩,开发打包会引用dll
+    > 打包配置中的htmlTemplate.enable为false关闭可提高打包速度
 
 cnpm run buildPro
-    生产环境打包，进行代码压缩,不会使用dll
+   > 生产环境打包，进行代码压缩,不会使用dll
 
 cnpm run watch
-    开发打包，打开本地服务器预览且监控代码修改，代码修改保存后自动打包刷新浏览器
-    运行指令后等待打包完成，在浏览器中选择html打开页面
+   > 开发打包，打开本地服务器预览且监控代码修改，代码修改保存后自动打包刷新浏览器
+   > 运行指令后等待打包完成，在浏览器中选择html打开页面
 
 
 #### 其他指令
 cnpm run lint
-    代码规范检查
+   > 代码规范检查
 
 
 #### SharePoint本地开发
 config下增加private.json
+```js
 {
   "siteUrl": "",
   "strategy": "OnpremiseUserCredentials",
@@ -41,6 +42,7 @@ config下增加private.json
   "domain": "",
   "password: ""
 }
+```
 
 online的strategy使用 UserCredentials
 本地的使用 OnpremiseUserCredentials
