@@ -16,8 +16,7 @@ cnpm run buildDll
    > 进行Dll打包，当打包配置中的dll有变化时需重新打包
 
 cnpm run build
-   > 开发打包不进行代码压缩,开发打包会引用dll
-    > 打包配置中的htmlTemplate.enable为false关闭可提高打包速度
+   > 开发打包不进行代码压缩,开发打包会引用dll 打包配置中的htmlTemplate.enable为false关闭可提高打包速度
 
 cnpm run buildPro
    > 生产环境打包，进行代码压缩,不会使用dll
