@@ -67,6 +67,7 @@ vscode提示错误可以在编辑器设置中增加以下内容
 
 
 #### 目录结构
+```js
  ├─config                    // 打包配置
  ├─scripts                   // 打包脚本
  ├─src
@@ -95,3 +96,4 @@ vscode提示错误可以在编辑器设置中增加以下内容
  ├──tslint.json              // 代码规范选项
  ├──webpack.config.dll.js    // 代码规范选项
  └──webpack.config.js        // webpack打包配置文件
+```
