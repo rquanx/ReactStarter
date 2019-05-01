@@ -1,20 +1,21 @@
-const option = require("./config");
+const option = require("../config");
 const webpack = require('webpack');
 const path = require('path');
 const CleanWebpaclPlugin = require('clean-webpack-plugin');
+const devPath = require("./path");
 
 // 计时
 const smp = new(require("speed-measure-webpack-plugin"))();
 
-const builderConfig = require("./scripts/dll");
-const Builder = require("./scripts/builder");
+const builderConfig = require("./dll");
+const Builder = require("./builder");
 
-let builder = new Builder(path.join(__dirname, 'build/dll'), option.library);
+let builder = new Builder(path.join(devPath.root, 'build/dll'), option.library);
 builder.setEntry("vendor", option.dll);
 builder.usePlugin([
     new CleanWebpaclPlugin(),
     new webpack.DllPlugin({
-        path: path.join(__dirname, 'build/dll', '[name]-manifest.json'),
+        path: path.join(devPath.root, 'build/dll', '[name]-manifest.json'),
         name: `[name]_Dll`,
     }),
 ]);

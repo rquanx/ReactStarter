@@ -1,3 +1,9 @@
+const port = 8080;
+const RestProxy = require('sp-rest-proxy');
+const setting = {
+    port,
+}
+
 function builderConfig(builder) {
     return {
         entry: builder.entry,
@@ -21,8 +27,17 @@ function builderConfig(builder) {
             contentBase: builder.initalObj.path,
             hot: true, //热替换
             open: true, // 默认打开浏览器  === 脚本运行时使用--open,
-            port: "8080", //默认端口
+            port, //默认端口
             inline: true, //自动刷新
+            watchContentBase: true,
+            writeToDisk: true,
+            before: app => {
+                // Register SP API Proxy
+                new RestProxy(setting, app).serveProxy();
+
+                // Other routes
+                // ...
+            }
         },
         plugins: builder.plugins,
         bail: true,

@@ -1,7 +1,7 @@
-let JSOM_CONFIG = {
-    log: null,
-    loading: null
-}
+// let JSOM_CONFIG = {
+//     log: null,
+//     loading: null
+// }
 
 
 
@@ -34,6 +34,7 @@ class ResultMessage {
         this.success = success;
         this.data = data;
         this.message = message;
+        // JSOM.Loading && JSOM.Loading.hide();
     };
 }
 
@@ -1047,12 +1048,33 @@ JSOM.getCamlQuery = function (caml, pageInfo = "") {
     return camlQuery;
 };
 
-JSOM.Log = function (log) {
-    JSOM.Log = log;
-}
+// JSOM.Log = function (log) {
+//     JSOM.Log = log;
+// }
 
-JSOM.Loading = function (loading) {
-    JSOM.Loading = loading;
-}
+// JSOM.Loading = function (loading) {
+//     JSOM.Loading = loading;
+// }
+
+// function capture(target, prop, descript) {
+//     let v = descript.value;
+//     descriptor.value = function () {
+//         try {
+//             return v.apply(this, arguments);
+//         } catch (e) {
+//             return new ResultMessage(false, e, e.message);
+//         }
+//     };
+//     return descriptor;
+// }
+
+// function loading(target, prop, descript) {
+//     let v = descript.value;
+//     descriptor.value = function () {
+//         JSOM.Loading && JSOM.Loading.show();
+//         return v.apply(this, arguments);
+//     };
+//     return descriptor;
+// }
 
 export default JSOM;

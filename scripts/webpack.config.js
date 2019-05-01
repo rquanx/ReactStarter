@@ -1,7 +1,7 @@
-const option = require("./config");
+const option = require("../config");
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpaclPlugin = require('clean-webpack-plugin');
+const devPath = require("./path");
 // 缓存,待使用
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
@@ -24,12 +24,11 @@ const WebpackBar = require('webpackbar');
 const smp = new(require("speed-measure-webpack-plugin"))();
 
 
-const builderConfig = require("./scripts");
-const Builder = require("./scripts/builder");
-let builder = new Builder(path.resolve(__dirname, "build"), option.library, path.resolve(__dirname, "src/pages"));
-builder.useLoader(require("./scripts/loaders/style")());
+const builderConfig = require("./build");
+const Builder = require("./builder");
+let builder = new Builder(path.resolve(devPath.root, "build"), option.library, path.resolve(devPath.root, "src/pages"));
+builder.useLoader(require("./loaders/style")());
 builder.usePlugin([
-    new CleanWebpaclPlugin(),
     new WebpackBar(),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
@@ -38,9 +37,9 @@ builder.usePlugin([
         to: 'assets/'
     }]),
 ]);
-builder.useTSLoader(path.resolve(__dirname, "src"));
+builder.useTSLoader(path.resolve(devPath.root, "src"));
 builder.setAlias({
-    "@src": path.resolve(__dirname, "src"),
+    "@src": path.resolve(devPath.root, "src"),
     "@components": "@src/components",
     "@services": "@src/services",
     "@config": "@src/config"
@@ -58,7 +57,7 @@ builder.splitChunks("Commons", {
 
 builder.splitChunks("vendor", {
     chunks: "all",
-    test: path.resolve(__dirname, "node_modules"),
+    test: path.resolve(devPath.root, "node_modules"),
     name: "vendor",
     enforce: true,
     priority: 10
@@ -70,17 +69,16 @@ builder.beforeBuilder((config, env, options) => {
         builder.globalImport("@services/mock");
     }
     if (options.mode === Builder.Mode.development) {
-        // builder.usePlugin([new webpack.DllReferencePlugin({
-        //         // 描述 lodash 动态链接库的文件内容
-        //         manifest: require('./build/dll/vendor-manifest.json')
-        //     })
-        // ]);
+        builder.usePlugin([new webpack.DllReferencePlugin({
+            // 描述 lodash 动态链接库的文件内容
+            manifest: require('../build/dll/vendor-manifest.json')
+        })]);
     } else {
-        builder.userMinimizer(require("./scripts/plugins/uglifyjs"));
+        builder.userMinimizer(require("./plugins/uglifyjs"));
     }
 });
 
-option.htmlTemplate && builder.useHtmlPlugin(path.resolve(__dirname, "src/html"), option.scripts, option.css);
+option.htmlTemplate.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"), option.htmlTemplate.scripts, option.htmlTemplate.css);
 option.typeCheck && builder.usePlugin(new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true
 }));

@@ -1,3 +1,5 @@
+// 示例
+
 import Config from "@src/config";
 import mock from "./modal";
 export let file = [

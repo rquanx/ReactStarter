@@ -13,8 +13,16 @@ function htmlPlugin({
     let htmlFiles = fs.readdirSync(path)
     entryKeys.forEach((key) => {
         if (htmlFiles.includes(`Template.html`)) {
-            let path = entry[key];
-            let pageInfo = require(`${Array.isArray(path) ? path[path.length - 1] : path}/pageinfo`);
+            let srcPath = entry[key];
+            srcPath = Array.isArray(srcPath) ? srcPath[srcPath.length - 1] : srcPath;
+            let pageInfo = {
+                scripts: [],
+                css: [],
+                title: ""
+            };
+            if(fs.readdirSync(srcPath).includes("pageinfo.js")) {
+                pageInfo = require(`${srcPath}/pageinfo`);
+            }
             plugins.push(new HtmlWebpackPlugin({
                 title: pageInfo.title ? pageInfo.title : key,
                 filename: `html/${key}.html`,
@@ -25,7 +33,6 @@ function htmlPlugin({
                 css: [...css, ...pageInfo.css]
                 // favicon 引入的favicon
                 // chunks 引用哪些js   多个html则使用多次调用
-                // title html标题
             }));
         }
     });

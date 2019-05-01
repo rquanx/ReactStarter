@@ -81,3 +81,41 @@ export async function PostRequest(path, params = undefined, header = undefined) 
     }
 
 }
+
+/**
+ * 
+ * @param {string} fileId 
+ * @param {string} applicant 
+ */
+export async function DownloadFile(fileId, applicant) {
+    let queryResult = await GetRequest(`${Config.Api.Base}${Config.Api.FileOperation.Path}${Config.Api.FileOperation.DownLoadFile}`, {
+        fileId,
+        applicant
+    });
+    if (queryResult.success) {
+        window.open(queryResult.data);
+        return queryResult.data;
+    } else {
+        throw (queryResult.errorMessage);
+    }
+}
+
+/**
+ * @param {{ fileID: string,mainFileType: string, subFileType: string,thirdFileType: string,fileName: string, applicantDepartment: string ,createDate: Date,isFavorite: 0/1}} info
+ */
+export async function CollectionFile(info = {}, userID) {
+    let queryResult = await PostRequest(`${Config.Api.Base}${Config.Api.FileOperation.Path}${Config.Api.FileOperation.FavoriteFile}`, {
+        FileId: info.UniqueId,
+        UserId: userID,
+        FileType: checkData(info.FileType),
+        FileName: info.FileName,
+        ApplicantDepartment: checkData(info.ApplicantDepartment),
+        IsFavorite: !info.IsFavorite,
+        EffectiveDate: info.EffectiveDate
+    });
+    if (queryResult.success) {
+        return queryResult.data;
+    } else {
+        throw (queryResult.errorMessage);
+    }
+}

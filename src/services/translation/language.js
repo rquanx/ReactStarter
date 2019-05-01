@@ -1,5 +1,5 @@
 import Cookies from "./cookies";
-const key = "sr-language";
+const KEY = "sr-language";
 export const Type = {
     zh: "zh",
     en: "en",
@@ -12,7 +12,7 @@ export const Type = {
 export function get() {
     let result = Type.zh;
     try {
-        result = Cookies.getCookie(key) || localStorage.getItem(key);
+        result = Cookies.getCookie(KEY) || localStorage.getItem(KEY);
         if (!result || !Type[result]) {
             result = Type.zh;
         }
@@ -24,10 +24,10 @@ export function get() {
 
 export function set(type) {
     try {
-        Cookies.setCookie(key, type, 7);
-        localStorage.setItem(key, type);
+        Cookies.setCookie(KEY, type, 7);
+        localStorage.setItem(KEY, type);
     } catch (e) {
-
+        
     }
 }
 
