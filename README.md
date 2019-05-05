@@ -73,6 +73,7 @@ vscode提示错误可以在编辑器设置中增加以下内容
 
 
 #### 目录结构
+```js
  ├─config                    // 配置
  │   ├─index.js              // 打包配置
  │   └─private.json          // SharePoint凭据信息
@@ -95,3 +96,4 @@ vscode提示错误可以在编辑器设置中增加以下内容
  ├──README.md                // 使用说明
  ├──tsconfig.json            // TypeScript编译设置
  └──tslint.json              // tslint代码规范选项
+ ```
