@@ -1,0 +1,17 @@
+.sr-loading {
+    width: 100px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    background: none !important;
+    -webkit-box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0) !important;
+    box-shadow: none !important;
+    position: fixed !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+.sr-loading-modal>div.ms-Modal-scrollableContent {
+    height: 50px !important;
+}

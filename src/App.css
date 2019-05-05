@@ -1,0 +1,8 @@
+/*  10k以下转成base64,10k以上复制文件 */
+.header {
+    height: 10px;
+    background: url("./assets/img/sr-logo.png") no-repeat
+}
+.app {
+    background: url("./assets/img/sr-nav-bg.png") no-repeat
+}

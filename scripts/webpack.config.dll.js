@@ -10,8 +10,12 @@ const smp = new(require("speed-measure-webpack-plugin"))();
 const builderConfig = require("./dll");
 const Builder = require("./builder");
 
-let builder = new Builder(path.join(devPath.root, 'build/dll'), option.library);
-builder.setEntry("vendor", option.dll);
+let builder = new Builder(path.join(devPath.root, 'build/dll'),
+    option.library,
+    option.publicPath, {
+        dll: option.dll
+    });
+// builder.setEntry("vendor", option.dll);
 builder.usePlugin([
     new CleanWebpaclPlugin(),
     new webpack.DllPlugin({

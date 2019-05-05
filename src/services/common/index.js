@@ -1,4 +1,6 @@
-
+/**
+ * 获取请求参数返回key-value
+ */
 export function getRequest() {
     //url例子：www.bicycle.com?id="123456"&Name="bicycle"；  
     var url = decodeURI(location.search); //?id="123456"&Name="bicycle";
@@ -14,3 +16,15 @@ export function getRequest() {
     }
     return object;
 };
+
+/**
+ * 延时加载
+ * @param {*} dynamic 动态加载页面
+ * @param {number} delay 最小加载时间
+ */
+export function loadable(dynamic,delay = 300) {
+    return Promise.all([
+        dynamic,
+        new Promise(resolve => setTimeout(resolve, delay))
+    ]).then(([moduleExports]) => moduleExports);
+}

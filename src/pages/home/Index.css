@@ -1,0 +1,27 @@
+@import "../../assets/css/theme.css";
+
+/* 变量声明 */
+$color: red;
+
+
+.li {
+    background-color: red
+}
+
+/* 模块化嵌套 */
+.app {
+    .home {
+        .panel {
+            background-color: $color
+        }
+        a {
+            background-color: $color;
+            &:hover {
+                color: $theme
+            }
+            > test {
+                color: aliceblue
+            }
+        }
+    }
+}

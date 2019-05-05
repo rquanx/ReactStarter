@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Notification from 'rc-notification'; // 可以不用，提供了定时和缓存
+import Notification from 'rc-notification';
 import Loading from "./Loading";
-
+// rc-notification不必要，可以去除，有一定的bug
 
 const notificationInstance = {};
 
@@ -40,14 +40,15 @@ function getNotificationInstance(
 function notice() {
     const duration = defaultDuration;
     if (count === 0) {
+        // 每次创建的实例都是不同的key,防止由于延迟删除后删除错误
         getNotificationInstance(
-            "key",
+            `key-${Date.now().toString()}`,
             (notification) => {
                 notification.notice({
                     content:
                         (<Loading visible={true} />),
                     duration,
-                    key: "key",
+                    key: `key-${Date.now().toString()}`,
                     closable: true,
                 });
             },
@@ -60,10 +61,12 @@ function notice() {
  * 关闭全部loading
  */
 function hideAll() {
-    // 遍历删除实例
+    // 遍历删除实例,延迟删除，防止太快导致loading闪烁
     Object.keys(notificationInstance).forEach(cacheKey => {
-        notificationInstance[cacheKey].destroy();
-        delete notificationInstance[cacheKey];
+        setTimeout(() => {
+            notificationInstance[cacheKey].destroy();
+            delete notificationInstance[cacheKey];
+        }, 300);
     });
     count = 0;
 }

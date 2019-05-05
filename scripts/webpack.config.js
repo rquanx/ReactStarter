@@ -2,6 +2,16 @@ const option = require("../config");
 const path = require('path');
 const webpack = require('webpack');
 const devPath = require("./path");
+const RestProxy = require('sp-rest-proxy');
+const port = 8080;
+const proxy = {
+    port, //默认端口
+    before: app => {
+        new RestProxy({
+            port
+        }, app).serveProxy();
+    }
+}
 // 缓存,待使用
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
@@ -26,17 +36,27 @@ const smp = new(require("speed-measure-webpack-plugin"))();
 
 const builderConfig = require("./build");
 const Builder = require("./builder");
-let builder = new Builder(path.resolve(devPath.root, "build"), option.library, path.resolve(devPath.root, "src/pages"));
-builder.useLoader(require("./loaders/style")());
+let builder = new Builder(
+    path.resolve(devPath.root, "build"),
+    option.library,
+    option.publicPath,
+    option.SPA ? {
+        App: path.resolve(devPath.root, "src")
+    } : path.resolve(devPath.root, "src/pages"));
+
+builder.useLoader(require("./loaders/style"));
+builder.useLoader(require("./loaders/img"));
+builder.useLoader(require("./loaders/font"));
 builder.usePlugin([
     new WebpackBar(),
     new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin([{
-        from: 'src/assets',
-        to: 'assets/'
+        from: 'src/assets/sp',
+        to: 'assets/sp'
     }]),
 ]);
+
 builder.useTSLoader(path.resolve(devPath.root, "src"));
 builder.setAlias({
     "@src": path.resolve(devPath.root, "src"),
@@ -71,19 +91,24 @@ builder.beforeBuilder((config, env, options) => {
     if (options.mode === Builder.Mode.development) {
         builder.usePlugin([new webpack.DllReferencePlugin({
             // 描述 lodash 动态链接库的文件内容
-            manifest: require('../build/dll/vendor-manifest.json')
+            manifest: require('../build/dll/dll-manifest.json')
         })]);
     } else {
         builder.userMinimizer(require("./plugins/uglifyjs"));
     }
 });
 
-option.htmlTemplate.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"), option.htmlTemplate.scripts, option.htmlTemplate.css);
+option.htmlTemplate.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"),
+    option.SP.enable ? [...option.SP.scrpts, ...option.htmlTemplate.scripts] : option.htmlTemplate.scripts,
+    option.htmlTemplate.css);
 option.typeCheck && builder.usePlugin(new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true
 }));
 option.polyfill && builder.globalImport("@babel/polyfill");
 option.analyzer && builder.usePlugin(new BundleAnalyzerPlugin());
 
+builder.setProxy(option.SP.enable ? proxy : {
+    port
+});
 
 module.exports = smp.wrap(builder.Config(builderConfig));

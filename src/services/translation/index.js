@@ -19,7 +19,10 @@ export function inital() {
     Common = Current.Common || {};
     let searchArg = getRequest();
     let keyList = (location.pathname.split("."))[0].split("/");
-    [...keyList, ...(Object.keys(searchArg).map((item) => searchArg[item]))].forEach(function (item) {
+    [...keyList,
+        ...(Object.keys(searchArg).map((item) => searchArg[item])),
+        ...location.hash.split("/")
+    ].forEach(function (item) {
         let temResult = Current[item];
         if (temResult && typeof (temResult) === "object") {
             Current = temResult;
@@ -57,14 +60,14 @@ export function changeLanguage(type) {
     location.reload();
 }
 
-export let getLanguage = get;
+export const getLanguage = get;
 
-export let LanguageType = Type;
+export const LanguageType = Type;
 
 export default {
     T,
-    changeLanguage,
-    getLanguage,
+    change: changeLanguage,
+    get: getLanguage,
     inital,
-    LanguageType
+    type: LanguageType
 };

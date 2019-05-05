@@ -18,9 +18,9 @@ class Builder {
      * 
      * @param {string} buildPath 
      * @param {string} libName 
-     * @param {string} entryPath 
+     * @param {} entry 
      */
-    constructor(buildPath, libName, entryPath = "") {
+    constructor(buildPath, libName, publicPath,entry = "") {
         this.entry = {}; // entryConfig.getEntry("./src/pages/");
         this.plugins = [];
         this.loaders = [];
@@ -32,11 +32,18 @@ class Builder {
         this.initalObj = {
             path: "",
             library: "",
+            publicPath: ""
         };
+        this.proxy = {};
         this.initalObj.path = buildPath;
         this.initalObj.library = libName;
-        if (entryPath) {
-            this.entry = entryConfig.getEntry(`${entryPath}\\`);
+        this.initalObj.publicPath = publicPath;
+        if (entry) {
+            if (typeof entry === "string") {
+                this.entry = entryConfig.getEntry(`${entry}\\`);
+            } else {
+                this.entry = entry;
+            }
         }
     }
 
@@ -86,6 +93,7 @@ class Builder {
             this.callList.forEach((fun) => {
                 fun(this.config, env, options);
             });
+            // console.log(this.config.module.rules)
             return this.config;
         }
     }
@@ -105,6 +113,10 @@ class Builder {
 
     addEntry(key, enpoint) {
         pushList(this.entry[key], enpoint);
+    }
+
+    setProxy(setting) {
+        this.proxy = setting;
     }
 }
 Builder.Mode = {

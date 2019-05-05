@@ -1,8 +1,8 @@
-const port = 8080;
-const RestProxy = require('sp-rest-proxy');
-const setting = {
-    port,
-}
+// const port = 8080;
+// const RestProxy = require('sp-rest-proxy');
+// const setting = {
+//     port,
+// }
 
 function builderConfig(builder) {
     return {
@@ -16,10 +16,12 @@ function builderConfig(builder) {
         output: {
             path: builder.initalObj.path,
             filename: `js/${builder.initalObj.library}.[name].js`,
+            chunkFilename: `js/${builder.initalObj.library}.[name].js`,
             library: builder.initalObj.library,
             libraryTarget: "var",
             hotUpdateChunkFilename: 'hot/hot-update.js',
-            hotUpdateMainFilename: 'hot/hot-update.json'
+            hotUpdateMainFilename: 'hot/hot-update.json',
+            publicPath: builder.initalObj.publicPath    // 设置公共路径，按需加载、图片请求、字体请求会根据此路径
         },
         // Enable sourcemaps for debugging webpack's output.
         devtool: "cheap-source-map",
@@ -27,17 +29,10 @@ function builderConfig(builder) {
             contentBase: builder.initalObj.path,
             hot: true, //热替换
             open: true, // 默认打开浏览器  === 脚本运行时使用--open,
-            port, //默认端口
             inline: true, //自动刷新
             watchContentBase: true,
             writeToDisk: true,
-            before: app => {
-                // Register SP API Proxy
-                new RestProxy(setting, app).serveProxy();
-
-                // Other routes
-                // ...
-            }
+            ...builder.proxy
         },
         plugins: builder.plugins,
         bail: true,

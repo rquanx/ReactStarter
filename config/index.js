@@ -1,37 +1,47 @@
 let config = {
-        SPA: false,
-        htmlTemplate: {
-                // 是否启用模板生成，没改动时关闭，加快打包
-                enable: true,
-                // 注入到模板的script
-                scripts: ["../dll/CarsgenRecordManagement.vendor.js"],
-                // 注入到目标的css
-                css: ["../assets/css/Common.css"],
+        SPA: true,                                                       // 是否是单页应用
+        SP: {
+                enable: false,                                           // 是否启动SharePoint调试
+                scrpts: ["../assets/sp/initstrings.js",                 // SharePoint调试注入的scripts
+                        "../assets/sp/init.js",
+                        "../assets/sp/MicrosoftAjax.js",
+                        "../assets/sp/sp.core.js",
+                        "../assets/sp/sp.runtime.js",
+                        "../assets/sp/sp.js"
+                        // "/_layouts/15/1033/initstrings.js",
+                        // "/_layouts/15/init.js",
+                        // "/_layouts/15/MicrosoftAjax.js",
+                        // "/_layouts/15/sp.core.js",
+                        // "/_layouts/15/sp.runtime.js",
+                        // "/_layouts/15/sp.js"
+                ]
         },
-        // 是否打包mock
-        mock: false,
-        // 是否打包polyfill,只对Product打包生效
-        polyfill: true,
-        // 是否启动打包分析
-        analyzer: false,
-        // 是否进行类型检查
-        typeCheck: false,
-        // 项目名
-        library: "CarsgenRecordManagement",
+        htmlTemplate: {
+                enable: false,                                           // 是否启用模板生成，没改动时关闭，加快打包
+                scripts: ["../dll/CarsgenRecordManagement.dll.js"],     // 注入到模板的scripts
+                css: ["../assets/css/Common.css"],                      // 注入到模板的css
+        },
+        mock: false,                                                    // 是否打包mock
+        polyfill: true,                                                 // 是否打包polyfill
+        analyzer: false,                                                // 是否启动打包分析
+        typeCheck: false,                                               // 是否启动打包类型检查
+        library: "CarsgenRecordManagement",                             // 项目打包的lib名
+        publicPath: "../",                                              // 公共路径，按需加载、图片请求、字体请求会根据此路径,相对html页面得相对路径
+        dll: Array.from(new Set([                                       // dll要打包的模块,将引入的第三方模块写入数组中,
+                "react", 'react-dom', "react-router-dom",
+                "@babel/polyfill", "axios",
+                "@fortawesome/react-fontawesome",                       // Pagination
+                "@fortawesome/free-solid-svg-icons",                    // Pagination
+                "rc-notification",                                      // Loading
 
-        // dll要打包的模块,将引入的第三方模块写入数组中,
-        dll: Array.from(new Set([
-                "react", 'react-dom', "@babel/polyfill", "axios",
-                "@fortawesome/react-fontawesome", // Pagination
-                "@fortawesome/free-solid-svg-icons", // Pagination
-
-                // 逐个引入
+                // fabric-react逐个引入
                 // "office-ui-fabric-react/lib/Dialog",    // Notification
                 // 'office-ui-fabric-react/lib/Modal',    // Notification
                 // "office-ui-fabric-react/lib/Button",    // Notification
                 // "office-ui-fabric-react/lib/Icons",    // Notification
                 // 'office-ui-fabric-react/lib/Spinner',   // loading
 
+                
                 // 'office-ui-fabric-react/lib/DatePicker',
                 // 'office-ui-fabric-react/lib/Label',
                 // 'office-ui-fabric-react/lib/Dropdown',
