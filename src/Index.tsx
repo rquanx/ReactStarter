@@ -5,12 +5,13 @@ import Language from "@services/translation";
 import Loading from "@components/Loading";
 import Notification from "@components/Notification";
 
+
 // 入口、初始化
 Language.inital();
 
 // 对话框初始化
 Notification.Config({
-    before: Loading.hideAll
+    beforeShow: Loading.hideAll
 });
 
 ReactDOM.render(
