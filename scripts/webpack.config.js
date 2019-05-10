@@ -54,6 +54,9 @@ builder.usePlugin([
     new CopyWebpackPlugin([{
         from: 'src/assets/sp',
         to: 'assets/sp'
+    },{
+        from: 'src/assets/css',
+        to: 'assets/css'
     }]),
 ]);
 
@@ -98,9 +101,9 @@ builder.beforeBuilder((config, env, options) => {
     }
 });
 
-option.htmlTemplate.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"),
-    option.SP.enable ? [...option.SP.scrpts, ...option.htmlTemplate.scripts] : option.htmlTemplate.scripts,
-    option.htmlTemplate.css);
+option.template.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"),
+    option.SP.enable ? [...option.SP.scrpts, ...option.template.scripts] : option.template.scripts,
+    option.template.css);
 option.typeCheck && builder.usePlugin(new ForkTsCheckerWebpackPlugin({
     checkSyntacticErrors: true
 }));

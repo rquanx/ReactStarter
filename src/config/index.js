@@ -8,32 +8,18 @@ let env = EnvType.Develop;
 
 let Config = {
   Api: {
-    Base: "",
-    LocalBase: "",
-    BaseDocument: "",
+    Base: env === EnvType.Develop ? "http://192.168.20.47:8011/" : "",
     File: {
-      Path: "",
+      Path: "Api/File/",
+      GetInvalidCorrelationFiles: "GetInvalidCorrelationFiles",
     },
-    Organization: {
-      Path: "",
-    },
-    Workflow: {
-      Path: "",
-    },
-    Report: {
-      Path: "",
-    },
-    FileOperation: {
-      Path: "",
-    }
   },
   Lists: {
     MainLibrary: "MainLibrary",
-    MainInvalidLibrary: "MainInvalidLibrary"
   },
   File: {
     Img: {
-      Path: ""
+      Path: env === EnvType.Local ? "../assets/img" : "/recordmanagement/Style Library/Carsgen/img/"
     }
   },
   Pages: {

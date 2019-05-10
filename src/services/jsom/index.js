@@ -1,10 +1,3 @@
-// let JSOM_CONFIG = {
-//     log: null,
-//     loading: null
-// }
-
-
-
 class ServiceInfo {
     /**
      * @constructor 
@@ -34,9 +27,47 @@ class ResultMessage {
         this.success = success;
         this.data = data;
         this.message = message;
-        // JSOM.Loading && JSOM.Loading.hide();
-    };
+    };  
 }
+
+const funList = ["getCurrentUser", "getSiteUserInfo", "getListItem", "getListItemById", "updateListItemById",
+    "updateListItemByCaml", "updateListItemsByIdList", "updateListItemsByCaml", "deleteListItemById",
+    "deleteListItemsByCaml", "deleteListItemsByIdList", "createListItem", "createListItems", "isCurrentUserMemberOfGroup",
+    "isUserMemberOfGroup", "getUsersOfGroup", "updateDocumentLibraryItemById", "overWriteFile",
+    "createDocumentLibraryItem", "createFolder", "checkSitePermission", "checkListPermission",
+    "renderListData", "getListGUID", "getFileById"
+];
+
+let Config = {
+    before: [],
+    after: []
+};
+
+function beforeExecu() {
+    Config.before.forEach((i) => {
+        typeof i === "function" && i();
+    });
+}
+
+function afterExecu(v) {
+    Config.after.forEach((i) => {
+        typeof i === "function" && i();
+    });
+    return v;
+}
+
+const aop = (target, name) => {
+    let value = target[name];
+    Object.defineProperty(target, name, {
+        get: function () {
+            return (...arg) => {
+                beforeExecu();
+                let r = value.apply(this, arg);
+                return r.then(afterExecu, afterExecu)
+            }
+        }
+    });
+};
 
 class JSOM {
     /**
@@ -58,6 +89,7 @@ class JSOM {
         this.ServiceInfo.listTitle = title;
         return this;
     };
+
 
     /**
      * 读取当前用户数据
@@ -84,10 +116,12 @@ class JSOM {
         return new Promise(getUser);
     };
 
+
+
     /**
      * //根据caml语句和要获取的属性，返回用户信息,实际是读取User Information List表
      * @param {any} caml 
-     * @param {string[]} fields 空数组时查询所有字段，目前代码不支持取特定字段且取位置信息，如需获取位置必须要获取全部字段
+     * @param {string[]} fields 空数组时查询所有字段，目前代码不支持取特定字段且取位置信息，如需获取位置要获取全部字段或使用caml限制返回字段
      * 
      */
     getSiteUserInfo(caml, fields = []) {
@@ -149,11 +183,13 @@ class JSOM {
         return new Promise(getItem);
     }
 
+
+
     /**
      * 根据caml语句、定位信息和要获取的属性，返回列表
      * @param {any} caml 搜索caml
      * result.data = { haveNext: boolean, data: items[] } or result.data = errorMessage 
-     * @param {string[]} fields 需要获取字段,空数组代表获取全部字段
+     * @param {string[]} fields 需要获取字段,空数组代表获取全部字段,目前代码不支持取特定字段且取位置信息，如需获取位置要获取全部字段或使用caml限制返回字段
      * @param {string} pageInfo 定位信息 
      */
     getListItem(caml, fields = [], pageInfo = "") {
@@ -215,6 +251,8 @@ class JSOM {
         return new Promise(getPageItem);
     };
 
+
+
     /**
      * 根据id获取item项
      * @param {string | number} id 
@@ -245,6 +283,7 @@ class JSOM {
     };
 
 
+
     /** 
      * 根据传入的对象和id，更新指定的列表项
      * @param {string | number} id 
@@ -272,6 +311,7 @@ class JSOM {
         }
         return new Promise(updateItem);
     };
+
 
     /** 
      * 根据传入的caml，更新第一项
@@ -301,12 +341,10 @@ class JSOM {
                 oListItem.update();
                 info.context.executeQueryAsync(onSuccess, onError);
             }
-
             function onSuccess(sender, args) {
                 var result = new ResultMessage(true, idList);
                 onComplete(result);
             }
-
             function onError(sender, args) {
                 var result = new ResultMessage(false, args, args.get_message());
                 rej(result);
@@ -350,6 +388,7 @@ class JSOM {
         return new Promise(updateItems);
     };
 
+
     /** 
      * 根据传入的caml，更新所有项
      * @param {any} caml 
@@ -376,7 +415,6 @@ class JSOM {
                 }
                 info.context.executeQueryAsync(onSuccess, onError);
             }
-
             function onSuccess(sender, args) {
                 var result = new ResultMessage(true, {});
                 res(result);
@@ -445,7 +483,6 @@ class JSOM {
                     onSuccess();
                 }
             }
-
             function onSuccess(sender, args) {
                 var result = new ResultMessage(true, {});
                 res(result);
@@ -515,6 +552,44 @@ class JSOM {
             function onSuccess(sender, args) {
                 var result = new ResultMessage(true, {
                     id: newItem.get_id()
+                });
+                res(result);
+            }
+            function onError(sender, args) {
+                var result = new ResultMessage(false, args, args.get_message());
+                rej(result);
+            }
+        }
+        return new Promise(createItem);
+    };
+
+    /** 
+     * 根据传入的对象，创建列表项
+     * @param { string } subFolderPath 默认加到列表根路径下，如果多层文件夹也要多层
+     * @param { { [field: string]: {type: string, value: string} } } attributesList
+     */
+    createListItems(subFolderPath, attributesList) {
+        let info = this.ServiceInfo;
+        let newItems = [];
+
+        function createItem(res, rej) {
+            let list = JSOM.getList(info);
+            attributesList.forEach((item) => {
+                let itemCreateInfo = new SP.ListItemCreationInformation();
+                if (subFolderPath) {
+                    itemCreateInfo.set_folderUrl(info.context.get_url() + "/" + info.listTitle + "/" + subFolderPath);
+                }
+                let newItem = list.addItem(itemCreateInfo);
+                JSOM.setListItem(newItem, item);
+                newItem.update();
+                info.context.load(newItem);
+                newItems.push(newItem);
+            });
+            info.context.executeQueryAsync(onSuccess, onError);
+
+            function onSuccess(sender, args) {
+                var result = new ResultMessage(true, {
+                    id: newItems.map((i) => i.get_id())
                 });
                 res(result);
             }
@@ -686,17 +761,14 @@ class JSOM {
                 self.updateListItemById(id, attributesObj)
                     .then(onRenameComplete, onError);
             }
-
             function onRenameComplete(data) {
                 self.overWriteFile(arrayBuffer, fileDir, newFileName)
                     .then(onSuccess, onError);
             }
-
             function onSuccess(data) {
                 var result = new ResultMessage(data.success, data);
                 res(result);
             }
-
             function onError(sender, args) {
                 var result = new ResultMessage(false, args, args.get_message());
                 rej(result);
@@ -748,7 +820,6 @@ class JSOM {
                 let result = new ResultMessage(true, {});
                 res(result);
             }
-
             function onError(sender, args) {
                 let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
@@ -806,7 +877,6 @@ class JSOM {
                 });
                 res(result);
             }
-
             function onError(sender, args) {
                 let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
@@ -842,7 +912,6 @@ class JSOM {
                 let result = new ResultMessage(true, {});
                 res(result);
             }
-
             function onError(sender, args) {
                 let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
@@ -957,6 +1026,30 @@ class JSOM {
         }
         return new Promise(getLsitID);
     };
+
+    getFileById(uniqueId) {
+        let info = this.ServiceInfo;
+
+        function getLsitID(res, rej) {
+            let file = info.web.getFileById(uniqueId);
+            let listItem = file.get_listItemAllFields();
+            // info.context.load(file);
+            info.context.load(listItem);
+            info.context.executeQueryAsync(onSuccess, onError);
+
+            function onSuccess(sender, args) {
+                let data = listItem.get_fieldValues();
+                let result = new ResultMessage(true, data);
+                res(result);
+            }
+
+            function onError(sender, args) {
+                let result = new ResultMessage(false, args, args.get_message());
+                rej(result);
+            }
+        }
+        return new Promise(getLsitID);
+    }
 }
 
 
@@ -999,8 +1092,7 @@ JSOM.setListItem = function (newItem, attributesObj) {
         } else {
             newItem.set_item(key, obj.value);
         }
-    }
-};
+    }};
 
 /**
  * 创建JSOM操作对象
@@ -1031,6 +1123,9 @@ JSOM.getList = function (info) {
 JSOM.getCamlQuery = function (caml, pageInfo = "") {
     var camlQuery = new SP.CamlQuery();
     if (typeof (caml) === "string") {
+        if (!caml) {
+            caml = "";
+        }
         camlQuery.set_viewXml(caml);
     } else {
         camlQuery.set_viewXml(caml.ToString());
@@ -1048,33 +1143,16 @@ JSOM.getCamlQuery = function (caml, pageInfo = "") {
     return camlQuery;
 };
 
-// JSOM.Log = function (log) {
-//     JSOM.Log = log;
-// }
+JSOM.Config = ({
+    before = undefined,
+    after = undefined
+}) => {
+    before && Config.before.push(before);
+    after && Config.after.push(after);
+};
 
-// JSOM.Loading = function (loading) {
-//     JSOM.Loading = loading;
-// }
-
-// function capture(target, prop, descript) {
-//     let v = descript.value;
-//     descriptor.value = function () {
-//         try {
-//             return v.apply(this, arguments);
-//         } catch (e) {
-//             return new ResultMessage(false, e, e.message);
-//         }
-//     };
-//     return descriptor;
-// }
-
-// function loading(target, prop, descript) {
-//     let v = descript.value;
-//     descriptor.value = function () {
-//         JSOM.Loading && JSOM.Loading.show();
-//         return v.apply(this, arguments);
-//     };
-//     return descriptor;
-// }
+funList.forEach(key => {
+    aop(JSOM.prototype, key);
+});
 
 export default JSOM;

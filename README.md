@@ -17,7 +17,7 @@ cnpm run buildDll
 
 cnpm run build
     开发打包不进行代码压缩,开发打包会引用dll
-        打包配置中的htmlTemplate.enable为false关闭可提高打包速度
+        打包配置中的template.enable为false关闭可提高打包速度
 
 cnpm run buildPro
     生产环境打包，进行代码压缩,不会使用dll
@@ -37,21 +37,21 @@ cnpm run lint
 2、config下的private.json中输入下列信息
 {
   "siteUrl": "",
-  "strategy": "OnpremiseUserCredentials",
+  "strategy": "",
   "username": "",
-  "domain": "",
+  "domain": "", 
   "password: ""
 }
-3、删除private.json，代理会通过cmd要求输入对应的信息，并且生成private.json保存
+
+删除private.json，代理会通过cmd要求输入对应的信息，并且生成private.json保存
 
 SharePoint Online的strategy为 UserCredentials
 本地的使用 OnpremiseUserCredentials
 
 #### CSS编写
-可以支持类似Sass的语法，需要被import才可解析
+可以支持类似Sass的语法，需要被import才可解析,注意模块化，互相影响
 
 vscode提示错误可以在编辑器设置中增加以下内容
-
 ```json
  "files.associations": {
         "*.css": "scss"
@@ -96,4 +96,4 @@ vscode提示错误可以在编辑器设置中增加以下内容
  ├──README.md                // 使用说明
  ├──tsconfig.json            // TypeScript编译设置
  └──tslint.json              // tslint代码规范选项
- ```
+```

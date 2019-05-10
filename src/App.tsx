@@ -2,6 +2,8 @@ import React, { Suspense, lazy } from "react";
 import { HashRouter, Route, Switch, Link } from 'react-router-dom';
 import Loading from "@components/Loading";
 import { loadable } from "@services/common";
+
+
 // 图片打包测试
 import "./App.css";
 
@@ -17,9 +19,9 @@ export class App extends React.Component<{}, {}> {
     render() {
         return (
             <HashRouter>
-                <div className="iconfont icon-shangchuan1" >icon</div>
-                <div className="header" >test</div>
-                <div className="app">
+                <div className="iconfont icon-shangchuan1 header" >icon test</div>
+                <div className="app" >img test</div>
+                <div  >
                     {/* 去除导航就只能通过链接进入对应的route */}
                     <ul>
                         <li>

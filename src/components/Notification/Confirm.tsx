@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Notification, { INotificationProps } from "./Notification";
-import Config from '../../../config';
 
 let Instance: INotificationProps[] = [];
 let Div = null;
@@ -71,7 +70,7 @@ function closeAll() {
             config.onCancel(null);
         }
     }
-    if (config.onCancel && typeof Config.onCancel === "function") {
+    if (config.onCancel && typeof config.onCancel === "function") {
         Instance[0].onCancel(null);
     }
     Instance[0].visible = false;

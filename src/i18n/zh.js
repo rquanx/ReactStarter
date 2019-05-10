@@ -1,6 +1,3 @@
 export default {
-    Test: {
-
-    },
     Common: {}
 }

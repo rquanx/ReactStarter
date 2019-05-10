@@ -1,19 +1,24 @@
 import Mock from "mockjs";
 import {
     getRequest
-} from "../common";
+} from "@services/common";
 import Config from "@src/config";
 import file from './file';
 let SWITCH = "mock";
 let searchArg = getRequest();
 
 if (searchArg[SWITCH] || Config.Features.Mock) {
+    console.log("mock open");
+    
     let apiList = [...file];
-    apiList.forEach((api) => {
-        Mock.mock(RegExp(`${api.url}.*`), api.type, function (param) {
+    apiList.forEach(({
+        url,
+        type,
+        data
+    }) => {
+        Mock.mock(RegExp(`${url}.*`), type, function (param) {
             console.log(param);
-            return Mock.mock(api.data)
+            return Mock.mock(data)
         });
     })
-    console.log("mock open");
 }

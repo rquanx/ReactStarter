@@ -13,7 +13,6 @@ import {
 } from "office-ui-fabric-react/lib/Dialog";
 import { Mode } from "./Enum";
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
-import { type } from "os";
 initializeIcons(/* optional base url */);
 
 /**
@@ -47,7 +46,9 @@ export interface INotificationProps {
 }
 
 const Operation = {
-    hideLoading: null
+    beforeRender: [],
+    beforeShow: [],
+    afterRender: []
 }
 
 const DefaultProps: INotificationProps = {
@@ -57,18 +58,42 @@ const DefaultProps: INotificationProps = {
     cancelText: "取消",
 }
 
-function beforeRender(props: INotificationProps) {
-    if (props.visible && Operation.hideLoading && typeof Operation.hideLoading === "function") {
-        Operation.hideLoading();
-    }
-//     props.dialogProps = props.dialogProps ? props.dialogProps : {};
-//     props.cancelButtonProps = props.cancelButtonProps ? props.cancelButtonProps : {};
-//     props.confirmButtonProps = props.confirmButtonProps ? props.confirmButtonProps : {};
+const aop = (before = undefined, after = undefined) => (fun, param, ...arg) => {
+    before && before(param, arg);
+    let r = fun(param, arg);
+    after && after(param, arg);
+    return r;
 }
 
-Notification.Config = (hideLoading) => { Operation.hideLoading = hideLoading; };
-Notification.Confirm = (props?: INotificationProps) => { return {} };
-Notification.Error = (props?: INotificationProps) => { return {} };
+function before(props: INotificationProps) {
+    Operation.beforeRender.forEach((item) => {
+        if (typeof item === "function") {
+            item(props);
+        }
+    });
+    Operation.beforeShow.forEach((item) => {
+        if (props.visible && typeof item === "function") {
+            item(props);
+        }
+    });
+}
+
+function after(props: INotificationProps) {
+    Operation.afterRender.forEach((item) => {
+        if (typeof item === "function") {
+            item(props);
+        }
+    });
+}
+
+Notification.Config = ({ beforeRender = undefined, beforeShow = undefined, afterRender = undefined }) => {
+    beforeRender && Operation.beforeRender.push(beforeRender);
+    beforeShow && Operation.beforeShow.push(beforeShow);
+    afterRender && Operation.afterRender.push(afterRender);
+};
+
+Notification.Confirm = (props?: INotificationProps) => { console.log("null") };
+Notification.Error = (props?: INotificationProps) => { console.log("null") };
 
 export function Notification(props: INotificationProps) {
 
@@ -83,10 +108,8 @@ export function Notification(props: INotificationProps) {
             props.onCancel(e);
         }
     }
-
-    beforeRender(props);
-
-    return (
+    
+    return aop(before, after)(() => (
         <Modal
             isOpen={props.visible}
             isBlocking={false}
@@ -119,7 +142,7 @@ export function Notification(props: INotificationProps) {
                         {...props.cancelButtonProps} />
                 </DialogFooter>
             </Dialog>
-        </Modal>);
+        </Modal>), props);
 }
 
 export default Notification;
