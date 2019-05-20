@@ -56,6 +56,13 @@ function afterExecu(v) {
     return v;
 }
 
+function afterErrorExecu(v) {
+    Config.after.forEach((i) => {
+        typeof i === "function" && i();
+    });
+    throw v;
+}
+
 const aop = (target, name) => {
     let value = target[name];
     Object.defineProperty(target, name, {
@@ -63,7 +70,7 @@ const aop = (target, name) => {
             return (...arg) => {
                 beforeExecu();
                 let r = value.apply(this, arg);
-                return r.then(afterExecu, afterExecu)
+                return r.then(afterExecu, afterErrorExecu)
             }
         }
     });
@@ -89,6 +96,10 @@ class JSOM {
         this.ServiceInfo.listTitle = title;
         return this;
     };
+
+    refresh() {
+        return JSOM.create(this.ServiceInfo.site,this.ServiceInfo.listTitle,this.ServiceInfo.listId);
+    }
 
 
     /**
@@ -548,7 +559,7 @@ class JSOM {
             newItem.update();
             info.context.load(newItem);
             info.context.executeQueryAsync(onSuccess, onError);
-
+            
             function onSuccess(sender, args) {
                 var result = new ResultMessage(true, {
                     id: newItem.get_id()
