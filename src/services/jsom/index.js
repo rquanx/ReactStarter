@@ -11,7 +11,7 @@ class ServiceInfo {
         this.listId = listId;
         this.context = site ? new SP.ClientContext(site) : SP.ClientContext.get_current();
         this.web = this.context.get_web();
-        this.currentContext = SP.ClientContext.get_current();
+        this.currentContext =  SP.ClientContext.get_current();
         this.currentWeb = this.currentContext.get_web();
     }
 }
@@ -63,6 +63,7 @@ function afterErrorExecu(v) {
     throw v;
 }
 
+
 const aop = (target, name) => {
     let value = target[name];
     Object.defineProperty(target, name, {
@@ -79,14 +80,16 @@ const aop = (target, name) => {
 class JSOM {
     /**
      * @constructor 
-     * @param {string} site 根据site获取clientContext,为空则默认取当前站点
-     * @param {string} listTitle 设置默认操作列表名
-     * @param {string} listId  设置默认操作列表id
+     * @param {string} [site = ""] 根据site获取clientContext,为空则默认取当前站点
+     * @param {string} [listTitle = ""] 设置默认操作列表名
+     * @param {string} [listId = ""]  设置默认操作列表id
      */
     constructor(site = "", listTitle = "", listId = "") {
+        if (!this || this === window || !(this instanceof JSOM)) {
+            throw new Error("JSOM is constructor not a function");
+        }
         this.ServiceInfo = new ServiceInfo(site, listTitle, listId);
     };
-
 
     /**
      * 设置读取的表名
@@ -105,22 +108,31 @@ class JSOM {
     /**
      * 读取当前用户数据
      * result.data = user or result.data = errorMessage 
+     * @param {boolean} currentSite
+     * @returns {Promise<ResultMessage>}
      */
-    getCurrentUser() {
+    getCurrentUser(currentSite = true) {
         let info = this.ServiceInfo;
 
         function getUser(res, rej) {
-            var user = info.currentWeb.get_currentUser(); // 读取当前用户
-            info.currentContext.load(user); // 加载当前用户
-            info.currentContext.executeQueryAsync(onSuccess, onError);
+            let context = info.context;
+            let web = info.web;
+            if (currentSite) {
+                context = info.currentContext;
+                web = info.currentWeb;
+            }
+
+            let user = web.get_currentUser(); // 读取当前用户
+            context.load(user); // 加载当前用户
+            context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, user);
+                let result = new ResultMessage(true, user);
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -129,49 +141,46 @@ class JSOM {
 
 
 
+
     /**
      * //根据caml语句和要获取的属性，返回用户信息,实际是读取User Information List表
      * @param {any} caml 
      * @param {string[]} fields 空数组时查询所有字段，目前代码不支持取特定字段且取位置信息，如需获取位置要获取全部字段或使用caml限制返回字段
-     * 
+     * @returns {Promise<ResultMessage>}
      */
-    getSiteUserInfo(caml, fields = []) {
+    getSiteUserInfo(caml = "", fields = []) {
         let info = this.ServiceInfo;
 
         function getItem(res, rej) {
-            // var list = web.get_lists().getById("xx");
-            // ===   var olist = info.web.get_lists().getByTitle("User Information List");
-            var olist = info.web.get_siteUserInfoList();
-            var camlQuery = JSOM.getCamlQuery(caml);
-            var collListItem = olist.getItems(camlQuery);
-            var include = "";
+            let olist = info.web.get_siteUserInfoList();
+            let camlQuery = JSOM.getCamlQuery(caml);
+            let collListItem = olist.getItems(camlQuery);
+            let include = "";
             if (fields && fields.length > 0) {
-                include = "Include(" + fields.join() + ")";
+                include = `Include(${fields.join()})`;
                 info.context.load(collListItem, include);
             } else {
                 info.context.load(collListItem);
             }
-
             info.context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var data;
-                var newPageInfo = null;
+                let data;
+                let nextPageInfo = null;
                 if (!fields || fields.length < 1) {
-                    newPageInfo = collListItem.get_listItemCollectionPosition();
+                    nextPageInfo = collListItem.get_listItemCollectionPosition();
                 }
 
-                var it = collListItem.getEnumerator();
-                var dataArray = new Array();
+                let it = collListItem.getEnumerator();
+                let dataArray = [];
                 while (it.moveNext()) {
-                    var item = it.get_current();
-                    var dataObj = new Object;
+                    let item = it.get_current();
+                    let dataObj = {};
 
                     if (include !== "") {
-                        for (var i in fields) {
-                            var prop = fields[i];
-                            dataObj[prop] = item.get_item(prop);
-                        }
+                        fields.forEach((field) => {
+                            dataObj[field] = item.get_item(field);
+                        });
                     } else {
                         dataObj = item.get_fieldValues();
                     }
@@ -179,15 +188,16 @@ class JSOM {
                     dataArray.push(dataObj);
                 }
                 data = {
-                    haveNext: newPageInfo ? true : false,
+                    haveNext: nextPageInfo ? true : false,
+                    nextPageInfo: nextPageInfo ? nextPageInfo.get_pagingInfo() : null,
                     data: dataArray
                 };
-                var result = new ResultMessage(true, data);
+                let result = new ResultMessage(true, data);
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -200,64 +210,66 @@ class JSOM {
      * 根据caml语句、定位信息和要获取的属性，返回列表
      * @param {any} caml 搜索caml
      * result.data = { haveNext: boolean, data: items[] } or result.data = errorMessage 
-     * @param {string[]} fields 需要获取字段,空数组代表获取全部字段,目前代码不支持取特定字段且取位置信息，如需获取位置要获取全部字段或使用caml限制返回字段
-     * @param {string} pageInfo 定位信息 
+     * @param {string} pageInfo 定位信息
+     * @param {string[]} fields 需要获取字段,空数组代表获取全部字段，目前代码不支持取特定字段且取位置信息，如需获取位置要获取全部字段或使用caml限制返回字段
+     * @returns {Promise<ResultMessage>}
      */
-    getListItem(caml, fields = [], pageInfo = "") {
+    getListItem(caml = "", pageInfo = "", fields = []) {
         let info = this.ServiceInfo;
 
         function getPageItem(res, rej) {
-            var olist = JSOM.getList(info);
-            var camlQuery = JSOM.getCamlQuery(caml, pageInfo);
-            var collListItem = olist.getItems(camlQuery);
-
-            var include = "";
-            if (fields && fields.length > 0) {
-                include = "Include(" + fields.join() + ")";
-                info.context.load(collListItem, include);
-            } else {
-                info.context.load(collListItem);
-            }
-
-            info.context.executeQueryAsync(onSuccess, onError);
-
-            function onSuccess(data) {
-                var data;
-                var newPageInfo = null;
-                if (!fields || fields.length < 1) {
-                    newPageInfo = collListItem.get_listItemCollectionPosition();
+            try {
+                let olist = JSOM.getList(info);
+                let camlQuery = JSOM.getCamlQuery(caml, pageInfo);
+                let collListItem = olist.getItems(camlQuery);
+                let include = "";
+                if (fields && fields.length > 0) {
+                    include = `Include(${fields.join()})`;
+                    info.context.load(collListItem, include);
+                } else {
+                    info.context.load(collListItem);
                 }
+                info.context.executeQueryAsync(onSuccess, onError);
 
-
-                var it = collListItem.getEnumerator();
-                var dataArray = new Array();
-                while (it.moveNext()) {
-                    var item = it.get_current();
-                    var dataObj = new Object;
-
-                    if (include !== "") {
-                        for (var i in fields) {
-                            var prop = fields[i];
-                            dataObj[prop] = item.get_item(prop);
-                        }
-                    } else {
-                        dataObj = item.get_fieldValues();
+                function onSuccess(sender, args) {
+                    let data;
+                    let nextPageInfo = null;
+                    if (!fields || fields.length < 1) {
+                        nextPageInfo = collListItem.get_listItemCollectionPosition();
                     }
-
-                    dataArray.push(dataObj);
+                    let it = collListItem.getEnumerator();
+                    let dataArray = [];
+                    while (it.moveNext()) {
+                        let item = it.get_current();
+                        let dataObj = {};
+                        if (include !== "") {
+                            fields.forEach((field) => {
+                                dataObj[field] = item.get_item(field);
+                            });
+                        } else {
+                            dataObj = item.get_fieldValues();
+                        }
+                        dataArray.push(dataObj);
+                    }
+                    data = {
+                        haveNext: nextPageInfo ? true : false,
+                        nextPageInfo: nextPageInfo ? nextPageInfo.get_pagingInfo() : null,
+                        data: dataArray
+                    };
+                    let result = new ResultMessage(true, data);
+                    res(result);
                 }
-                data = {
-                    haveNext: newPageInfo ? true : false,
-                    data: dataArray
-                };
-                var result = new ResultMessage(true, data);
-                res(result);
-            }
 
-            function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+
+                function onError(sender, args) {
+                    let result = new ResultMessage(false, args, args.get_message());
+                    rej(result);
+                }
+            } catch (e) {
+                let result = new ResultMessage(false, e, e.message);
                 rej(result);
             }
+
         }
         return new Promise(getPageItem);
     };
@@ -269,24 +281,25 @@ class JSOM {
      * @param {string | number} id 
      * result.data = { haveNext: boolean, data: items[] } or result.data = errorMessage
      * 是否可以增加include? 
+     * @returns {Promise<ResultMessage>}
      */
     getListItemById(id) {
         let info = this.ServiceInfo;
 
         function getItem(res, rej) {
-            var context = info.context;
-            var olist = JSOM.getList(info);
-            var oListItem = olist.getItemById(id);
+            let context = info.context;
+            let olist = JSOM.getList(info);
+            let oListItem = olist.getItemById(id);
             context.load(oListItem);
             context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, oListItem.get_fieldValues());
+                let result = new ResultMessage(true, oListItem.get_fieldValues());
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -298,25 +311,26 @@ class JSOM {
     /** 
      * 根据传入的对象和id，更新指定的列表项
      * @param {string | number} id 
-     * @param { { [field: string]: {type: string, value: string} } } attributes
+     * @param { [field: string]:{ type: string, value: string} } } attributes
+     * @returns {Promise<ResultMessage>}
      */
     updateListItemById(id, attributes) {
         let info = this.ServiceInfo;
 
         function updateItem(res, rej) {
-            var oList = JSOM.getList(info); //读取表
-            var oListItem = oList.getItemById(id); //根据ID字段搜索表内容，唯一？			
+            let oList = JSOM.getList(info); //读取表
+            let oListItem = oList.getItemById(id); //根据ID字段搜索表内容，唯一？			
             JSOM.setListItem(oListItem, attributes);
             oListItem.update(); //设置数据更新
             info.context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, {});
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -328,36 +342,37 @@ class JSOM {
      * 根据传入的caml，更新第一项
      * @param {any} caml 
      * @param { { [field: string]: {type: string, value: string} } } attributes
+     * @returns {Promise<ResultMessage>}
      */
-    updateListItemByCaml(caml, attributes) {
+    updateListItemByCaml(caml = "", attributes = {}) {
         let info = this.ServiceInfo;
 
         function updateItem(res, rej) {
-            var idList = new Array();
-            var olist = JSOM.getList(info);
-            var camlQuery = JSOM.getCamlQuery(caml);
-            var collListItem = olist.getItems(camlQuery);
+            let idList = new Array();
+            let olist = JSOM.getList(info);
+            let camlQuery = JSOM.getCamlQuery(caml);
+            let collListItem = olist.getItems(camlQuery);
             info.context.load(collListItem);
             info.context.executeQueryAsync(updateItem, onError);
 
             function updateItem() {
-                var ListItemToBeUpdated = collListItem.getEnumerator();
-                var oList = JSOM.getList(info);
+                let ListItemToBeUpdated = collListItem.getEnumerator();
+                let oList = JSOM.getList(info);
                 ListItemToBeUpdated.moveNext();
-                var oItem = ListItemToBeUpdated.get_current();
-                var id = oItem.get_id();
+                let oItem = ListItemToBeUpdated.get_current();
+                let id = oItem.get_id();
                 idList.push(id);
-                var oListItem = oList.getItemById(id);
+                let oListItem = oList.getItemById(id);
                 JSOM.setListItem(oListItem, attributes);
                 oListItem.update();
                 info.context.executeQueryAsync(onSuccess, onError);
             }
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, idList);
-                onComplete(result);
+                let result = new ResultMessage(true, idList);
+                res(result);
             }
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -367,32 +382,33 @@ class JSOM {
     /** 
      * 根据传入的idList，更新所有项
      * @param {string[] | number[]} idList 
-     * @param { { [field: string]: {type: string, value: string} }[] } attributesList
+     * @param { [field: string]:{ type: string, value: string}[] } attributesList
+     * @returns {Promise<ResultMessage>}
      */
     updateListItemsByIdList(idList, attributesList) {
         let info = this.ServiceInfo;
 
         function updateItems(res, rej) {
-            var oList = JSOM.getList(info); //读取表
-            var count = 0;
-            for (var i = 0; i < idList.length; i++) {
-                var attributes = attributesList[count];
-                var oListItem = oList.getItemById(idList[i]);
+            let oList = JSOM.getList(info); //读取表
+            let count = 0;
+            idList.forEach((id) => {
+                let attributes = attributesList[count];
+                let oListItem = oList.getItemById(id);
                 JSOM.setListItem(oListItem, attributes);
                 oListItem.update();
                 if (count < attributesList.length - 1) {
                     count++;
                 }
-            }
+            });
             info.context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, {});
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -403,36 +419,37 @@ class JSOM {
     /** 
      * 根据传入的caml，更新所有项
      * @param {any} caml 
-     * @param { { [field: string]: {type: string, value: string} }} attributes
+     * @param { [field: string]:{ type: string, value: string}} attributes
+     * @returns {Promise<ResultMessage>}
      */
     updateListItemsByCaml(caml, attributes) {
         let info = this.ServiceInfo;
 
         function updateItems(res, rej) {
-            var olist = JSOM.getList(info);
-            var camlQuery = JSOM.getCamlQuery(caml);
-            var collListItem = olist.getItems(camlQuery);
+            let olist = JSOM.getList(info);
+            let camlQuery = JSOM.getCamlQuery(caml);
+            let collListItem = olist.getItems(camlQuery);
             info.context.load(collListItem);
             info.context.executeQueryAsync(updateMultipleListItemsInSameObj, onError);
 
             function updateMultipleListItemsInSameObj() {
-                var ListItemToBeUpdated = collListItem.getEnumerator();
-                var oList = JSOM.getList(info);
+                let ListItemToBeUpdated = collListItem.getEnumerator();
+                let oList = JSOM.getList(info);
                 while (ListItemToBeUpdated.moveNext()) {
-                    var oItem = ListItemToBeUpdated.get_current();
-                    var oListItem = oList.getItemById(oItem.get_id());
+                    let oItem = ListItemToBeUpdated.get_current();
+                    let oListItem = oList.getItemById(oItem.get_id());
                     JSOM.setListItem(oListItem, attributes);
                     oListItem.update();
                 }
                 info.context.executeQueryAsync(onSuccess, onError);
             }
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, {});
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -443,24 +460,25 @@ class JSOM {
     /** 
      * 根据传入id删除列表项
      * @param {string | number} id 
+     * @returns {Promise<ResultMessage>}
      */
     deleteListItemById(id) {
         let info = this.ServiceInfo;
 
         function deleteItem(res, rej) {
-            var list = JSOM.getList(info);
-            var listItem = list.getItemById(id);
+            let list = JSOM.getList(info);
+            let listItem = list.getItemById(id);
             listItem.deleteObject();
 
             info.context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, {});
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -470,23 +488,26 @@ class JSOM {
     /** 
      * 根据caml批量删除
      * @param {any} caml 
+     * @returns {Promise<ResultMessage>}
      */
     deleteListItemsByCaml(caml) {
         let info = this.ServiceInfo;
 
         function deleteItems(res, rej) {
-            var list = JSOM.getList(info);
-            var camlQuery = JSOM.getCamlQuery(caml);
-            var collListItem = list.getItems(camlQuery);
+            let idList = [];
+            let list = JSOM.getList(info);
+            let camlQuery = JSOM.getCamlQuery(caml);
+            let collListItem = list.getItems(camlQuery);
             info.context.load(collListItem);
             info.context.executeQueryAsync(deleteItem, onError);
 
             function deleteItem() {
                 if (collListItem.get_count() > 0) {
-                    var it = collListItem.getEnumerator();
+                    let it = collListItem.getEnumerator();
                     while (it.moveNext()) {
-                        var item = it.get_current();
-                        var listItem = list.getItemById(item.get_id());
+                        let item = it.get_current();
+                        let listItem = list.getItemById(item.get_id());
+                        idList.push(item.get_id());
                         listItem.deleteObject();
                     }
                     info.context.executeQueryAsync(onSuccess, onError);
@@ -495,12 +516,12 @@ class JSOM {
                 }
             }
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, idList);
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -510,15 +531,16 @@ class JSOM {
     /** 
      * 根据idList批量删除   待测试
      * @param {string[] | number[]} idList
+     * @returns {Promise<ResultMessage>}
      */
     deleteListItemsByIdList(idList) {
         let info = this.ServiceInfo;
 
         function deleteItems(res, rej) {
             if (idList.length > 0) {
-                var list = JSOM.getList(info);
+                let list = JSOM.getList(info);
                 idList.forEach((id) => {
-                    var listItem = list.getItemById(id);
+                    let listItem = list.getItemById(id);
                     listItem.deleteObject();
                 });
                 info.context.executeQueryAsync(onSuccess, onError);
@@ -527,13 +549,13 @@ class JSOM {
             }
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {});
+                let result = new ResultMessage(true, {});
                 res(result);
             }
 
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -542,32 +564,41 @@ class JSOM {
 
     /** 
      * 根据传入的对象，创建列表项
-     * @param { string } subFolderPath 默认加到列表根路径下，如果多层文件夹也要多层
-     * @param { { [field: string]: {type: string, value: string} } } attributesObj
+     * @param { string } folderPath 默认加到列表根路径下，如果多层文件夹也要多层
+     * @param { [field: string]:{ type: string, value: string} } attributesObj
+     * @returns {Promise<ResultMessage>}
      */
-    createListItem(subFolderPath, attributesObj) {
+    createListItem(folderPath, attributesObj) {
         let info = this.ServiceInfo;
 
         function createItem(res, rej) {
             let list = JSOM.getList(info);
             let itemCreateInfo = new SP.ListItemCreationInformation();
-            if (subFolderPath) {
-                itemCreateInfo.set_folderUrl(info.context.get_url() + "/" + info.listTitle + "/" + subFolderPath);
+            if(folderPath) {
+                let url = info.context.get_url();
+                let path = `Lists/${info.listTitle}/${folderPath}`;
+                if(url[url.length - 1] === "/") {
+                    path = `${url}${path}`;
+                }
+                else {
+                    path = `${url}/${path}`;
+                }
+                itemCreateInfo.set_folderUrl(path);
             }
             let newItem = list.addItem(itemCreateInfo);
             JSOM.setListItem(newItem, attributesObj);
             newItem.update();
             info.context.load(newItem);
             info.context.executeQueryAsync(onSuccess, onError);
-            
+
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {
+                let result = new ResultMessage(true, {
                     id: newItem.get_id()
                 });
                 res(result);
             }
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -576,10 +607,10 @@ class JSOM {
 
     /** 
      * 根据传入的对象，创建列表项
-     * @param { string } subFolderPath 默认加到列表根路径下，如果多层文件夹也要多层
+     * @param { string } folderPath 默认加到列表根路径下，如果多层文件夹也要多层
      * @param { { [field: string]: {type: string, value: string} } } attributesList
      */
-    createListItems(subFolderPath, attributesList) {
+    createListItems(folderPath, attributesList) {
         let info = this.ServiceInfo;
         let newItems = [];
 
@@ -587,10 +618,17 @@ class JSOM {
             let list = JSOM.getList(info);
             attributesList.forEach((item) => {
                 let itemCreateInfo = new SP.ListItemCreationInformation();
-                if (subFolderPath) {
-                    itemCreateInfo.set_folderUrl(info.context.get_url() + "/" + info.listTitle + "/" + subFolderPath);
-                }
-                let newItem = list.addItem(itemCreateInfo);
+                if(folderPath) {
+                    let url = info.context.get_url();
+                    let path = `Lists/${info.listTitle}/${folderPath}`;
+                    if(url[url.length - 1] === "/") {
+                        path = `${url}${path}`;
+                    }
+                    else {
+                        path = `${url}/${path}`;
+                    }
+                    itemCreateInfo.set_folderUrl(path);
+                }                let newItem = list.addItem(itemCreateInfo);
                 JSOM.setListItem(newItem, item);
                 newItem.update();
                 info.context.load(newItem);
@@ -599,14 +637,14 @@ class JSOM {
             info.context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var result = new ResultMessage(true, {
+                let result = new ResultMessage(true, {
                     id: newItems.map((i) => i.get_id())
                 });
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -622,30 +660,30 @@ class JSOM {
         let info = this.ServiceInfo;
 
         function checkUser(res, rej) {
-            var context = info.context;
-            var web = info.web;
-            var currentUser = web.get_currentUser();
+            let context = info.context;
+            let web = info.web;
+            let currentUser = web.get_currentUser();
             context.load(currentUser);
-            var groupUsers = web.get_siteGroups().getByName(groupName).get_users();
+            let groupUsers = web.get_siteGroups().getByName(groupName).get_users();
             context.load(groupUsers);
             context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var userInGroup = false;
-                var groupUserEnumerator = groupUsers.getEnumerator();
+                let userInGroup = false;
+                let groupUserEnumerator = groupUsers.getEnumerator();
                 while (groupUserEnumerator.moveNext()) {
-                    var groupUser = groupUserEnumerator.get_current();
+                    let groupUser = groupUserEnumerator.get_current();
                     if (groupUser.get_id() === currentUser.get_id()) {
                         userInGroup = true;
                         break;
                     }
                 }
-                var result = new ResultMessage(true, userInGroup);
+                let result = new ResultMessage(true, userInGroup);
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -662,63 +700,62 @@ class JSOM {
         let info = this.ServiceInfo;
 
         function checkUser(res, rej) {
-            var context = info.context;
-            var web = info.web;
-            var groupUsers = web.get_siteGroups().getByName(groupName).get_users();
+            let context = info.context;
+            let web = info.web;
+            let groupUsers = web.get_siteGroups().getByName(groupName).get_users();
             context.load(groupUsers);
             context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var userInGroup = false;
-                var groupUserEnumerator = groupUsers.getEnumerator();
+                let userInGroup = false;
+                let groupUserEnumerator = groupUsers.getEnumerator();
                 while (groupUserEnumerator.moveNext()) {
-                    var groupUser = groupUserEnumerator.get_current();
+                    let groupUser = groupUserEnumerator.get_current();
                     if (groupUser.get_id() == userId) {
                         userInGroup = true;
                         break;
                     }
                 }
-                var result = new ResultMessage(true, userInGroup);
+                let result = new ResultMessage(true, userInGroup);
                 res(result);
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
         return new Promise(checkUser);
     }
-
     /** 
      * 获取所有在此用户组的用户
      * @param { string } groupName 要检查的组名
+     * @returns {Promise<ResultMessage>}
      */
     getUsersOfGroup(groupName) {
         let info = this.ServiceInfo;
 
         function checkUser(res, rej) {
-            var context = info.context;
-            var web = info.web;
+            let context = info.context;
+            let web = info.web;
 
-            var group = web.get_siteGroups().getByName(groupName);
+            let group = web.get_siteGroups().getByName(groupName);
             context.load(group);
 
-            var groupUsers = group.get_users();
+            let groupUsers = group.get_users();
             context.load(groupUsers);
-
             context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
-                var userList = new Array();
-                var groupData = {
+                let userList = new Array();
+                let groupData = {
                     Title: group.get_title(),
                     ID: group.get_id(),
                     groupData: group
                 };
-                var groupUserEnumerator = groupUsers.getEnumerator();
+                let groupUserEnumerator = groupUsers.getEnumerator();
                 while (groupUserEnumerator.moveNext()) {
-                    var groupUser = groupUserEnumerator.get_current();
+                    let groupUser = groupUserEnumerator.get_current();
                     userList.push({
                         ID: groupUser.get_id(),
                         Title: groupUser.get_title(),
@@ -726,7 +763,7 @@ class JSOM {
                     });
                 }
 
-                var result = new ResultMessage(true, {
+                let result = new ResultMessage(true, {
                     userList: userList,
                     group: groupData
                 });
@@ -734,7 +771,7 @@ class JSOM {
             }
 
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -747,19 +784,20 @@ class JSOM {
      * @param { string | number} id item的id
      * @param { string } newFileName 文件新名字
      * @param { any } arrayBuffer 二进制文件数据
-     * @param { { [field: string]: {type: string, value: string} }} attributesObj 更新的字段值
+     * @param { [field: string]:{ type: string, value: string}} attributesObj 更新的字段值
      * @param { string | number} isNewFileName  是否重命名
+     * @returns {Promise<ResultMessage>}
      */
     updateDocumentLibraryItemById(id, newFileName, arrayBuffer, attributesObj, isNewFileName = false) {
-        var self = this;
-        var fileDir = "";
+        let self = this;
+        let fileDir = "";
 
         function updateItem(res, rej) {
             self.getListItemById(id)
                 .then(onGetDirComplete, onError);
 
             function onGetDirComplete(data) {
-                var fileDirArray = data.data["FileDirRef"].split("/");
+                let fileDirArray = data.data["FileDirRef"].split("/");
                 if (fileDirArray.length > 1) {
                     fileDir = fileDirArray.pop();
                 }
@@ -777,11 +815,11 @@ class JSOM {
                     .then(onSuccess, onError);
             }
             function onSuccess(data) {
-                var result = new ResultMessage(data.success, data);
+                let result = new ResultMessage(data.success, data);
                 res(result);
             }
             function onError(sender, args) {
-                var result = new ResultMessage(false, args, args.get_message());
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
         }
@@ -792,8 +830,9 @@ class JSOM {
      * 重写文件,待完善
      * 有大小限制，不大于1.5M,文件相关操作建议使用pnp.js
      * @param { any } arrayBuffer 二进制文件数据
-     * @param { string } fileUrl 文件夹路径
-     * @param { string } folderName  文件夹名
+     * @param { string } fileName 文件夹名
+     * @param { string } folderName  文件夹名，路径
+     * @returns {Promise<ResultMessage>}
      */
     overWriteFile(arrayBuffer, fileUrl, folderName) {
         let info = this.ServiceInfo;
@@ -818,7 +857,7 @@ class JSOM {
             let newFile;
             if (folderName) {
                 // 根据url添加
-                newFile = oList.get_rootFolder().get_folders().getByUrl(info.listTitle + "/" + folderName).get_files().add(createInfo);
+                newFile = oList.get_rootFolder().get_folders().getByUrl(`${info.listTitle}/${folderName}`).get_files().add(createInfo);
             } else {
                 // 在根目录添加
                 newFile = oList.get_rootFolder().get_files().add(createInfo);
@@ -827,7 +866,7 @@ class JSOM {
             clientContext.load(newFile);
             clientContext.executeQueryAsync(onSuccess, onError);
 
-            function onSuccess(data) {
+            function onSuccess(sender, args) {
                 let result = new ResultMessage(true, {});
                 res(result);
             }
@@ -842,18 +881,18 @@ class JSOM {
     /** 
      * 创建文档库Item,待完善
      * 有大小限制，不大于1.5M,文件相关操作建议使用pnp.js
-     * @param { string } fileUrl 文件路径
+     * @param { string } fileName 文件名
      * @param { any } arrayBuffer 二进制文件数据
-     * @param { string } folderName  文件夹名
-     * @param { { [field: string]: {type: string, value: string} } } attributesObj 字段数据
+     * @param { string } folderName  文件夹名,路径
+     * @param { [field: string]:{ type: string, value: string} } attributesObj 字段数据
+     * @returns {Promise<ResultMessage>}
      */
-    createDocumentLibraryItem(fileUrl, arrayBuffer, folderName, attributesObj) {
+    createDocumentLibraryItem(fileName, arrayBuffer, folderName, attributesObj) {
         let info = this.ServiceInfo;
 
         function createItem(res, rej) {
             let clientContext = info.context;
             let oList = JSOM.getList(info);
-
             //Convert the file contents into base64 data  
             let bytes = new Uint8Array(arrayBuffer);
             let i, out = '';
@@ -862,20 +901,18 @@ class JSOM {
                 out += String.fromCharCode(bytes[i]);
             }
             let base64 = btoa(out);
-
             //Create FileCreationInformation object using the read file data  
             let createInfo = new SP.FileCreationInformation();
             createInfo.set_content(base64);
-            createInfo.set_url(fileUrl);
+            createInfo.set_url(fileName);
             let newFile;
             if (folderName) {
                 // 根据url添加
-                newFile = oList.get_rootFolder().get_folders().getByUrl(info.listTitle + "/" + folderName).get_files().add(createInfo);
+                newFile = oList.get_rootFolder().get_folders().getByUrl(`${info.listTitle}/${folderName}`).get_files().add(createInfo);
             } else {
                 // 在根目录添加
                 newFile = oList.get_rootFolder().get_files().add(createInfo);
             }
-
             let myListItem = newFile.get_listItemAllFields();
             JSOM.setListItem(myListItem, attributesObj);
             myListItem.update();
@@ -896,30 +933,40 @@ class JSOM {
         return new Promise(createItem);
     };
 
+
     /** 
      * 创建文件夹,暂时只支持在根路径下创建,待完善
-     * @param { string } subFolderPath 路径,如果在根路径，为false即可， "/site/listTitle/subFolderPath" 
-     * @param { string } folderName 文件夹名
-     * @param { { [field: string]: {type: string, value: string} } } attributesObj 字段数据
+     * @param { string } path 路径,如果在根路径，为false即可， "/site/listTitle/path" 
+     * @param { string } name 文件夹名
+     * @param { [field: string]:{ type: string, value: string} } attributesObj 字段数据
+     * @returns {Promise<ResultMessage>}
      */
-    createFolder(subFolderPath, folderName, attributesObj = {}) {
+    createFolder(path, name, attributesObj = {}) {
         let info = this.ServiceInfo;
 
         function createItem(res, rej) {
             let clientContext = info.context;
             let oList = JSOM.getList(info);
             let itemCreateInfo = new SP.ListItemCreationInformation();
-            if (subFolderPath) {
-                itemCreateInfo.set_folderUrl(info.context.get_url() + "/" + info.listTitle + "/" + subFolderPath);
-            }
+            if(path) {
+                let url = info.context.get_url();
+                let folderPath = `Lists/${info.listTitle}/${path}`;
+                if(url[url.length - 1] === "/") {
+                    folderPath = `${url}${folderPath}`;
+                }
+                else {
+                    folderPath = `${url}/${folderPath}`;
+                }
+                itemCreateInfo.set_folderUrl(folderPath);
+            }            
             itemCreateInfo.set_underlyingObjectType(SP.FileSystemObjectType.folder);
-            itemCreateInfo.set_leafName(folderName);
+            itemCreateInfo.set_leafName(name);
             let oListItem = oList.addItem(itemCreateInfo);
             JSOM.setListItem(oListItem, attributesObj);
             oListItem.update();
             clientContext.executeQueryAsync(onSuccess, onError);
 
-            function onSuccess() {
+            function onSuccess(sender, args) {
                 let result = new ResultMessage(true, {});
                 res(result);
             }
@@ -933,7 +980,8 @@ class JSOM {
 
     /** 
      * 检查用户在当前设置的站点下的权限
-     * @param {any} permission 权限枚举
+     * @param {any} permission 权限枚举 SP.PermissionKind
+     * @returns {Promise<ResultMessage>}
      */
     checkSitePermission(permission) {
         let info = this.ServiceInfo;
@@ -962,7 +1010,8 @@ class JSOM {
 
     /** 
      * 检查用户在当前设置的列表下的权限
-     * @param {any} permission 权限枚举
+     * @param {any} permission 权限枚举 SP.PermissionKind
+     * @returns {Promise<ResultMessage>}
      */
     checkListPermission(permission) {
         let info = this.ServiceInfo;
@@ -989,15 +1038,16 @@ class JSOM {
 
     /** 
      * 读取视图数据  
-     * @param {*} caml   
+     * @param {*} caml  
+     * @returns {Promise<ResultMessage>}
      */
-    renderListData(caml) {
+    renderListData(caml = "") {
         let info = this.ServiceInfo;
 
         function render(res, rej) {
             let context = info.context;
             let camlStr = typeof caml === "string" ? caml : caml.ToString();
-            let groupByData = context.get_web().get_lists().getByTitle(info.listTitle).renderListData(camlStr);
+            let groupByData = JSOM.getList(info).renderListData(camlStr);
             context.executeQueryAsync(onSuccess, onError);
 
             function onSuccess(sender, args) {
@@ -1016,12 +1066,13 @@ class JSOM {
 
     /**
      * 读取指定列表GUID
+     * @returns {Promise<ResultMessage>}
      */
     getListGUID() {
         let info = this.ServiceInfo;
 
         function getLsitID(res, rej) {
-            let olist = info.web.get_lists().getByTitle(info.listTitle);
+            let olist = JSOM.getList(info);
             info.context.load(olist, 'Id');
             info.context.executeQueryAsync(onSuccess, onError);
 
@@ -1038,6 +1089,11 @@ class JSOM {
         return new Promise(getLsitID);
     };
 
+    /**
+     * 根据文件guid获取到item项数据
+     * @param {*} uniqueId  文件guid 
+     * @returns {Promise<ResultMessage>}
+     */
     getFileById(uniqueId) {
         let info = this.ServiceInfo;
 
@@ -1078,32 +1134,34 @@ JSOM.IncludeType = {
 
 /** 
  * 设置要更新的字段数据
- * @param {any} newItem
- * @param { { [field: string]: {type: string, value: string} } } attributesObj
+ * @param {any} item
+ * @param { [field: string]:{ type: string, value: string} }  attributes
+ * 
+ * 日期需要toISOString() "2019-04-13T15:34:17.511Z"
  */
-JSOM.setListItem = function (newItem, attributesObj) {
-    for (var key in attributesObj) {
-        var obj = attributesObj[key];
-        if (obj.type === "lookupValue") {
-            if (typeof (obj.value) !== "object") {
-                var lkfieldsomthing = new SP.FieldLookupValue();
-                lkfieldsomthing.set_lookupId(obj.value);
-                newItem.set_item(key, lkfieldsomthing);
+JSOM.setListItem = function (item, attributes) {
+    attributes && Object.keys(attributes).forEach((key) => {
+        const obj = attributes[key];
+        let value = obj.value;
+        let type = obj.type ? obj.type : "";
+        if (JSOM.LookupType[type.toLowerCase()]) {
+            if (typeof (value) !== "object") {
+                value = JSOM.setLookup(value);
             } else {
-                var lookupList = [];
-                var len = obj.value.length;
-                for (var i = 0; i < len; i++) {
-                    var lkfieldsomthing = new SP.FieldLookupValue();
-                    lkfieldsomthing.set_lookupId(obj.value[i]);
-                    lookupList.push(lkfieldsomthing);
-                }
-                newItem.set_item(key, lookupList);
+                value = value.map((v) => {
+                    return JSOM.setLookup(v);
+                });
             }
-
-        } else {
-            newItem.set_item(key, obj.value);
         }
-    }};
+        item.set_item(key, value);
+    });
+};
+
+JSOM.LookupType = {
+    "lookup": true,
+    "lookupvalue": true,
+    "lookupid": true,
+};
 
 /**
  * 创建JSOM操作对象
@@ -1117,13 +1175,10 @@ JSOM.create = function (site = "", listTitle = "", listId = "") {
  * @param {any} info
  */
 JSOM.getList = function (info) {
-    var list;
-    if (info.listTitle) {
-        list = info.web.get_lists().getByTitle(info.listTitle);
-    } else {
-        list = info.web.get_lists().getById(info.listId);
+    if (!info.listTitle && !info.listId) {
+        throw new Error("listTitle and listId is undefined");
     }
-    return list;
+    return info.listTitle ? info.web.get_lists().getByTitle(info.listTitle) : info.web.get_lists().getById(info.listId);
 };
 
 /** 
@@ -1131,27 +1186,33 @@ JSOM.getList = function (info) {
  * @param {any} caml
  * @param {string} pageInfo
  */
-JSOM.getCamlQuery = function (caml, pageInfo = "") {
-    var camlQuery = new SP.CamlQuery();
-    if (typeof (caml) === "string") {
-        if (!caml) {
-            caml = "";
-        }
-        camlQuery.set_viewXml(caml);
-    } else {
-        camlQuery.set_viewXml(caml.ToString());
-        var folder = caml.GetFolder();
+JSOM.getCamlQuery = function (caml = "", pageInfo = "") {
+    let camlQuery = new SP.CamlQuery();
+    let xml = caml;
+    if (typeof (caml) === "object") {
+        let folder = caml.GetFolder ? caml.GetFolder() : "";
         if (folder) {
             camlQuery.set_folderServerRelativeUrl(folder);
         }
-        console.log(folder);
+        xml = caml.ToString();
     }
+    camlQuery.set_viewXml(xml);
     if (pageInfo) {
-        var position = new SP.ListItemCollectionPosition();
+        let position = new SP.ListItemCollectionPosition();
         position.set_pagingInfo(pageInfo);
         camlQuery.set_listItemCollectionPosition(position);
     }
     return camlQuery;
+};
+
+/**
+ * 设置查阅项
+ * @param {any} value
+ */
+JSOM.setLookup = function (value) {
+    let lkfieldsomthing = new SP.FieldLookupValue();
+    lkfieldsomthing.set_lookupId(value);
+    return lkfieldsomthing;
 };
 
 JSOM.Config = ({
