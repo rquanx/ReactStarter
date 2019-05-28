@@ -12,14 +12,14 @@ cnpm i
 
 
 #### 打包指令  
-cnpm run buildDll
+cnpm run dll
     进行Dll打包，当打包配置中的dll有变化时需重新打包
 
-cnpm run build
+cnpm run dev
     开发打包不进行代码压缩,开发打包会引用dll
         打包配置中的template.enable为false关闭可提高打包速度
 
-cnpm run buildPro
+cnpm run prod
     生产环境打包，进行代码压缩,不会使用dll
 
 cnpm run watch
@@ -43,8 +43,6 @@ cnpm run lint
   "password: ""
 }
 
-删除private.json，代理会通过cmd要求输入对应的信息，并且生成private.json保存
-
 SharePoint Online的strategy为 UserCredentials
 本地的使用 OnpremiseUserCredentials
 
@@ -63,7 +61,11 @@ vscode提示错误可以在编辑器设置中增加以下内容
 图片：10k以下会转换成base64
 
 #### 日志使用
+本地连接调试时建议禁用，防止上传了调试中产生的错误日志
+
 新建日志列表，列表字段,Time、Level、Agent、Message 全都是文本，Message为多行文本
+默认每10s检查一次是否需要上传
+
 ```js
 import {logger } from "@services/log";
 logger.setting({                      // logger为全局单例，在入口中setting一次即可
@@ -110,7 +112,7 @@ logger.error();
  │   ├─i18n                  // 语言包
  │   ├─pages
  │   │  └─Test
- │   │     ├── index.ts      // 多页应用时的页面入口，单页应用时为页面组件
+ │   │     ├── Index.ts      // 多页应用时的页面入口，单页应用时为页面组件
  │   │     └── pageinfo.js   // 对应页面的html模板信息，多页应用时使用
  │   ├─services              // 其他功能库
  │   ├─App.css

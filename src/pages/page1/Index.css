@@ -1,3 +1,5 @@
-.button {
-    background-color: red
+.page1 {
+    button {
+        margin-right: 10px
+    }
 }

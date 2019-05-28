@@ -2,14 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { HashRouter, Route, Switch, Link } from 'react-router-dom';
 import Loading from "@components/Loading";
 import { loadable } from "@services/common";
-
-
-// 图片打包测试
 import "./App.css";
-
-// 图标打包测试
-import "@src/assets/font/iconfont.css"
-
 
 const Home = lazy(() => loadable(import(/* webpackChunkName: "Home" */ './pages/home')));
 const Page1 = lazy(() => loadable(import(/* webpackChunkName: "Page1" */ './pages/page1')));
@@ -19,9 +12,7 @@ export class App extends React.Component<{}, {}> {
     render() {
         return (
             <HashRouter>
-                <div className="iconfont icon-shangchuan1 header" >icon test</div>
-                <div className="app" >img test</div>
-                <div  >
+                <div  className="app" >
                     {/* 去除导航就只能通过链接进入对应的route */}
                     <ul>
                         <li>

@@ -1,8 +1,16 @@
-/*  10k以下转成base64,10k以上复制文件 */
-.header {
-    height: 10px;
-    background: url("./assets/img/sr-logo.png") no-repeat
-}
 .app {
-    background: url("./assets/img/sr-nav-bg.png") no-repeat
-}
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      margin-bottom: 10px
+    }
+    ul li {
+      display: inline;
+      margin-right: 100px;
+    }
+    ul li a {
+        text-decoration: none;
+    }
+  }
+  

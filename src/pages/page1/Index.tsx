@@ -22,8 +22,8 @@ export const Page1 = () => {
   function showLoading() {
     Loading.show();
     setTimeout(() => {
-      //Loading.hide();
-    });
+      Loading.hide();
+    },1000);
   }
 
   function showDialog() {
@@ -38,23 +38,21 @@ export const Page1 = () => {
       }
     });
   }
-  function jsomTest() {
-    console.log("test");
-    JSOM.create("", "AccInfo")
-      .getListItem("")
-      .then(
-        e => {
-          console.log(e);
-        },
-        e => {
-          console.log(e);
-        }
-      );
+  async function jsomTest() {
+    try {
+      let result = await JSOM.create("", "AppConfig").getListItem("");
+      Notification.Confirm({
+        subText: JSON.stringify(result.data.data[0]["Title"])
+      })
+    }
+    catch(e) {
+      Notification.Confirm({subText: e.message});
+    }
   }
 
   return (
-    <div>
-      Page1
+    <div className="page1">
+      <h3>Page1</h3>
       <button onClick={showLoading}>loading</button>
       <button id="dialog" onClick={showDialog}>
         dialog

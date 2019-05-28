@@ -18,10 +18,10 @@
   },
   "scripts": {
     "watch": "webpack-dev-server --open --hot --mode=development --config ./scripts/webpack.config.js",
-    "buildPro": "webpack --mode=production --config ./scripts/webpack.config.js",
-    "build": "webpack --mode=development --config ./scripts/webpack.config.js",
+    "prod": "webpack --mode=production --config ./scripts/webpack.config.js",
+    "dev": "webpack --mode=development --config ./scripts/webpack.config.js",
     "lint": "tslint --project tslint.json \"src/**/*.tsx\" --force",
-    "buildDll": "webpack --config ./scripts/webpack.config.dll.js"
+    "dll": "webpack --config ./scripts/webpack.config.dll.js"
   },
   "devDependencies": {
     "@types/react": "^16.8.14",
