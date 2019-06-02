@@ -1,4 +1,4 @@
-以下所有cnpm均可替换成npm,国内使用npm速度较慢，建议安装cnpm且使用cnpm
+以下所有cnpm均可替换成npm,国内使用npm速度较慢，建议安装cnpm且使用cnpm或者将npm的源指向淘宝源
 
 
 #### 开始
@@ -35,6 +35,7 @@ cnpm run lint
 #### SharePoint本地开发
 1、将config/index.js中SP.enable设为true
 2、config下的private.json中输入下列信息
+```json
 {
   "siteUrl": "",
   "strategy": "",
@@ -42,6 +43,7 @@ cnpm run lint
   "domain": "", 
   "password: ""
 }
+```
 
 SharePoint Online的strategy为 UserCredentials
 本地的使用 OnpremiseUserCredentials
@@ -87,7 +89,7 @@ logger.setting({                      // logger为全局单例，在入口中set
 logger.info();
 logger.warn();
 logger.error();
-```js
+```
 
 #### npm/cnpm使用 
 ##### 安装在开发环境
