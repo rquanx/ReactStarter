@@ -7,6 +7,8 @@ import "./App.css";
 const Home = lazy(() => loadable(import(/* webpackChunkName: "Home" */ './pages/home')));
 const Page1 = lazy(() => loadable(import(/* webpackChunkName: "Page1" */ './pages/page1')));
 const NotMatch = lazy(() => loadable(import(/* webpackChunkName: "NotMatch" */ './pages/404')));
+const Example = lazy(() => loadable(import(/* webpackChunkName: "Example" */ './pages/Example')));
+
 
 export class App extends React.Component<{}, {}> {
     render() {
@@ -21,11 +23,15 @@ export class App extends React.Component<{}, {}> {
                         <li>
                             <Link to="/page1" >Page1</Link>
                         </li>
+                        <li>
+                            <Link to="/example" >Example</Link>
+                        </li>
                     </ul>
                     <Suspense fallback={<Loading />}  >
                         <Switch>
                             <Route exact path="/" component={Home} ></Route>
                             <Route path="/page1" component={Page1}  ></Route>
+                            <Route path="/example" component={Example}  ></Route>
                             <Route component={NotMatch} ></Route>
                         </Switch>
                     </Suspense>

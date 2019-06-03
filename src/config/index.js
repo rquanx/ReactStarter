@@ -15,7 +15,7 @@ let Config = {
     },
   },
   Lists: {
-    MainLibrary: "MainLibrary",
+    myTest: "myTest",
   },
   File: {
     Img: {
@@ -24,8 +24,8 @@ let Config = {
   },
   Pages: {
     Path: "",
-    Size: 5,
-    DisplayNum: 3,
+    Size: 5,          // 一页展示5条数据
+    DisplayNum: 3,    // 加载3页数据
     TimeSpan: 6
   },
   Site: {

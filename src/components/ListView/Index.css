@@ -74,3 +74,51 @@
     background-color: white;
 }
 
+.sr-list-box label { /*flex布局让子元素水平垂直居中*/
+    display: flex;
+    align-items: center;
+}
+
+.sr-list-box input[type=checkbox],input[type=radio] {
+    display: block;
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    position: relative;
+    margin-right: 25px;
+}
+
+.sr-list-box input[type=checkbox]:after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -7px;
+    left: 0;
+    bottom: 0;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    border: 1px solid #ddd;
+}
+
+.sr-list-box input[type=checkbox]:checked:before{
+    content: '';
+    display: table;
+    border: 2px solid #fff;
+    border-top: 0;
+    border-left: 0;
+    transform: rotate(45deg) scale(1) translate(-50%, -50%);
+    opacity: 1;
+    position: absolute;
+    z-index: 8;
+    top: 1px;
+    left: 4px;
+    height: 9px;
+}
+
+.sr-list-box input[type=checkbox]:checked:after {
+    content: "";
+    display: block;
+    border: 1px solid #1890ff;
+    background-color: #1890ff;
+}

@@ -1,0 +1,33 @@
+.sr-notice{
+    box-shadow: 0 0 3px black;
+    position: fixed;
+    z-index: 888;
+    background-color: white;
+    font-size: 20px;
+    padding: 15px 30px;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    border-radius: 7px;
+    color: white;
+    animation:notice 2s;
+}
+.success {
+    background-color: #1890ff;
+}
+.error {
+    background-color: #f5222d;
+}
+@keyframes notice{
+    0% {
+        opacity : 0
+    }
+    50% {
+        opacity : 1
+    }
+    100% {
+        opacity : 1
+    }
+
+}

@@ -1,7 +1,7 @@
 let config = {
         SPA: true, // 是否是单页应用,启用时以src/Index为入口，不启动pages下每个文件夹都是入口
         SP: {
-                enable: false, // 是否启动SharePoint调试
+                enable: true, // 是否启动SharePoint调试
                 scrpts: ["../assets/sp/initstrings.js", // SharePoint调试注入的scripts，本地获取
                         "../assets/sp/init.js",
                         "../assets/sp/MicrosoftAjax.js",

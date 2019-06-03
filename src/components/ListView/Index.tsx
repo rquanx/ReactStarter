@@ -1,8 +1,8 @@
 import React from "react";
 import { autobind } from "office-ui-fabric-react/lib/Utilities";
 import { T } from "@src/services/translation";
-import "Index.css";
-
+import "./Index.css";
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 export enum CellType {
     Text = "Text",
     A = "A",
@@ -65,9 +65,9 @@ export class ListView extends React.Component<IListViewProps, {}> {
         let headArray: JSX.Element[] = [];
         if (this.props.selection) {
             headArray.push(
-                <th className="checkbox" onClick={this.onSelectAllRows}>
-                    <input type="checkbox" />Select All
-                </th>);
+                <th className="checkbox" >
+                    <label><input type="checkbox" onChange={this.onSelectAllRows} /><span>{T("全选")}</span></label>
+            </th>);
         }
         for (let i = 0, len = columns.length; i < len; i++) {
             let column = columns[i];
@@ -93,7 +93,7 @@ export class ListView extends React.Component<IListViewProps, {}> {
         if (this.props.selection) {
             tdArray.push(
                 <td className="list-checkbox">
-                    <input type="checkbox" onClick={this.onSelectRow} />
+                    <label><input type="checkbox" onClick={this.onSelectRow} /></label>
                 </td>
             );
         }
@@ -165,16 +165,10 @@ export class ListView extends React.Component<IListViewProps, {}> {
     // 表单全选
     @autobind
     private onSelectAllRows(): void {
+        let elesAll = document.getElementsByClassName("checkbox");
         let eles = document.getElementsByClassName("list-checkbox");
-        if ((navigator.userAgent.indexOf('Chrome') === -1)) {
-            ((eles[0].firstChild) as HTMLInputElement).click();
-        }
-        let result = false;
-        if (((eles[0].firstChild) as HTMLInputElement).checked) {
-            result = true;
-        }
-        for (let i = 1; i < eles.length; i++) {
-            ((eles[i].firstChild) as HTMLInputElement).checked = result;
+        for (let i = 0; i < eles.length; i++) {
+            ((eles[i].firstChild.firstChild) as HTMLInputElement).checked =  (elesAll[0].firstChild.firstChild as HTMLInputElement).checked;
         }
         this.onChangeSelect();
     }
@@ -182,11 +176,25 @@ export class ListView extends React.Component<IListViewProps, {}> {
 
     // 单个checkbox选择（兼容IE）
     @autobind
-    private onSelectRow(elem): void {
+    private onSelectRow(elem) {
+        let elesAll = document.getElementsByClassName("checkbox");
         let current = ((elem.target) as HTMLInputElement);
-        if ((navigator.userAgent.indexOf('Chrome') === -1)) {
-            current.click();
+        if(current.checked){
+            let eles = document.getElementsByClassName("list-checkbox");
+            for (let i = 0; i < eles.length; i++) {
+                if (!(eles[i].firstChild.firstChild as HTMLInputElement).checked) {
+                    (elesAll[0].firstChild.firstChild as HTMLInputElement).checked = false;
+                    this.onChangeSelect();
+                    return false;
+                }
+            }
+            (elesAll[0].firstChild.firstChild as HTMLInputElement).checked = true;
+        }else{  
+            (elesAll[0].firstChild.firstChild as HTMLInputElement).checked = false;
         }
+        // if ((navigator.userAgent.indexOf('Chrome') === -1)) {
+        //     current.click();
+        // }
         this.onChangeSelect();
     }
 
@@ -194,22 +202,25 @@ export class ListView extends React.Component<IListViewProps, {}> {
     private onChangeSelect(): void {
         if (this.props.onSelected && typeof (this.props.onSelected) === "function") {
             let selectRows: number[] = [];
-            let eles = document.getElementsByClassName("checkbox");
-            for (let i = 1; i < eles.length; i++) {
-                if (((eles[i].firstChild) as HTMLInputElement).checked) {
+            let elesAll = document.getElementsByClassName("checkbox");
+            let eles = document.getElementsByClassName("list-checkbox");
+            for (let i = 0; i < eles.length; i++) {
+                if ((eles[i].firstChild.firstChild as HTMLInputElement).checked) {
                     let num = parseInt(((eles[i].parentNode as HTMLElement).getAttribute("data-index")));
                     selectRows.push(num);
                 }
             }
-            this.props.onSelected(selectRows, (eles[0].firstChild as HTMLInputElement).checked, this.onClearSelect);
+            this.props.onSelected(selectRows, (elesAll[0].firstChild.firstChild as HTMLInputElement).checked, this.onClearSelect);
         }
     }
 
     @autobind
     private onClearSelect() {
+        let elesAll = document.getElementsByClassName("checkbox");
         let eles = document.getElementsByClassName("list-checkbox");
+        (elesAll[0].firstChild.firstChild as HTMLInputElement).checked = false;
         for (let i = 0; i < eles.length; i++) {
-            ((eles[i].firstChild) as HTMLInputElement).checked = false;
+            ((eles[i].firstChild.firstChild) as HTMLInputElement).checked = false;
         }
     }
 }

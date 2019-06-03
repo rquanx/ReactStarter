@@ -230,43 +230,43 @@ class JSOM {
                     info.context.load(collListItem);
                 }
                 info.context.executeQueryAsync(onSuccess, onError);
-
-                function onSuccess(sender, args) {
-                    let data;
-                    let nextPageInfo = null;
-                    if (!fields || fields.length < 1) {
-                        nextPageInfo = collListItem.get_listItemCollectionPosition();
-                    }
-                    let it = collListItem.getEnumerator();
-                    let dataArray = [];
-                    while (it.moveNext()) {
-                        let item = it.get_current();
-                        let dataObj = {};
-                        if (include !== "") {
-                            fields.forEach((field) => {
-                                dataObj[field] = item.get_item(field);
-                            });
-                        } else {
-                            dataObj = item.get_fieldValues();
-                        }
-                        dataArray.push(dataObj);
-                    }
-                    data = {
-                        haveNext: nextPageInfo ? true : false,
-                        nextPageInfo: nextPageInfo ? nextPageInfo.get_pagingInfo() : null,
-                        data: dataArray
-                    };
-                    let result = new ResultMessage(true, data);
-                    res(result);
-                }
-
-
-                function onError(sender, args) {
-                    let result = new ResultMessage(false, args, args.get_message());
-                    rej(result);
-                }
             } catch (e) {
                 let result = new ResultMessage(false, e, e.message);
+                rej(result);
+            }
+
+            function onSuccess(sender, args) {
+                let data;
+                let nextPageInfo = null;
+                if (!fields || fields.length < 1) {
+                    nextPageInfo = collListItem.get_listItemCollectionPosition();
+                }
+                let it = collListItem.getEnumerator();
+                let dataArray = [];
+                while (it.moveNext()) {
+                    let item = it.get_current();
+                    let dataObj = {};
+                    if (include !== "") {
+                        fields.forEach((field) => {
+                            dataObj[field] = item.get_item(field);
+                        });
+                    } else {
+                        dataObj = item.get_fieldValues();
+                    }
+                    dataArray.push(dataObj);
+                }
+                data = {
+                    haveNext: nextPageInfo ? true : false,
+                    nextPageInfo: nextPageInfo ? nextPageInfo.get_pagingInfo() : null,
+                    data: dataArray
+                };
+                let result = new ResultMessage(true, data);
+                res(result);
+            }
+
+
+            function onError(sender, args) {
+                let result = new ResultMessage(false, args, args.get_message());
                 rej(result);
             }
 

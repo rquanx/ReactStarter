@@ -3,7 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const devPath = require("./path");
 const RestProxy = require('sp-rest-proxy');
-const port = 8080;
+const port = 8888;
 const proxy = {
     port, //默认端口
     before: app => {
@@ -37,12 +37,12 @@ const smp = new(require("speed-measure-webpack-plugin"))();
 const builderConfig = require("./build");
 const Builder = require("./builder");
 let builder = new Builder(
-    path.resolve(devPath.root, "build"),
+    devPath.build,
     option.library,
     option.publicPath,
     option.SPA ? {
-        App: path.resolve(devPath.root, "src")
-    } : path.resolve(devPath.root, "src/pages"));
+        App: devPath.src
+    } : devPath.pages);
 
 builder.useLoader(require("./loaders/style"));
 builder.useLoader(require("./loaders/img"));
@@ -60,9 +60,9 @@ builder.usePlugin([
     }]),
 ]);
 
-builder.useTSLoader(path.resolve(devPath.root, "src"));
+builder.useTSLoader(devPath.src);
 builder.setAlias({
-    "@src": path.resolve(devPath.root, "src"),
+    "@src": devPath.src,
     "@components": "@src/components",
     "@services": "@src/services",
     "@config": "@src/config"
@@ -80,7 +80,7 @@ builder.splitChunks("Commons", {
 
 builder.splitChunks("vendor", {
     chunks: "all",
-    test: path.resolve(devPath.root, "node_modules"),
+    test: devPath.nodeModules,
     name: "vendor",
     enforce: true,
     priority: 10
@@ -101,7 +101,7 @@ builder.beforeBuilder((config, env, options) => {
     }
 });
 
-option.template.enable && builder.useHtmlPlugin(path.resolve(devPath.root, "src/html"),
+option.template.enable && builder.useHtmlPlugin(devPath.template,
     option.SP.enable ? [...option.SP.scrpts, ...option.template.scripts] : option.template.scripts,
     option.template.css);
 option.typeCheck && builder.usePlugin(new ForkTsCheckerWebpackPlugin({
