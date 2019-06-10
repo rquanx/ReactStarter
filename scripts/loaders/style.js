@@ -9,10 +9,9 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
                 plugins: [
+                    require("postcss-import"),
                     require('precss'), // 让css支持类似sass的语法,vscode在设置json中增加 "files.associations": { "*.css": "scss" }
-                    require('autoprefixer')({ // 自动补全浏览器前缀
-                        browsers: ["defaults", "ie >= 10"]
-                    }),
+                    require('autoprefixer'),
                     // postcss-preset-env // 允许使用新特性，类似babel
                 ]
             }

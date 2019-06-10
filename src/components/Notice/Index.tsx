@@ -54,10 +54,10 @@ function notice(title: string, type: string) {
 }
 
 
-Notice.success = (title) => {
+Notice.Success = (title) => {
     return notice(title,'success')
 };
-Notice.error = (title) => {
+Notice.Error = (title) => {
     return notice(title,'error')
 };
 

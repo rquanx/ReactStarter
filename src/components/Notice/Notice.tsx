@@ -8,9 +8,12 @@ interface INoticeProps {
     type?: string
 }
 
-
-Notice.success = null;
-Notice.error = null;
+Notice.Success = (title: string) => {
+    return null;
+};
+Notice.Error = (title: string) => {
+    return null;
+};
 
 export function Notice(props: INoticeProps) {
     return (

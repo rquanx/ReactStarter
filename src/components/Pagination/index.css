@@ -78,7 +78,7 @@
   border-bottom-right-radius: 3px;
 }
 .sr-pagination-layout{
-  text-align: center;
+  /*text-align: center;*/
   margin-top: 20px;
 }
 .sr-pagination{

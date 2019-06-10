@@ -18,12 +18,12 @@ let config = {
         },
         // build 根据配置打包
         template: {
-                enable: false, // 是否启用模板生成，没改动时关闭，加快打包
+                enable: true, // 是否启用模板生成，没改动时关闭，加快打包
                 scripts: ["../dll/Test.dll.js"], // 注入到模板的scripts
                 css: ["../assets/css/Common.css"], // 注入到模板的css
         },
         mock: false, // 是否打包mock
-        polyfill: false, // 是否打包polyfill
+        polyfill: true, // 是否打包polyfill
         analyzer: false, // 是否启动打包分析,打包结束会启动浏览器显示各个包的大小
         typeCheck: false, // 是否启动打包类型检查
         library: "Test", // 项目打包的lib名

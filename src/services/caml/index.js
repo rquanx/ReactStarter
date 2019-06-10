@@ -563,7 +563,7 @@ CamlBuilder.prototype.Scope = function (scope = CamlEnum.ScopeType.RecursiveAll)
 };
 
 /**
- * 设置搜索条数,不调用此函数默认搜索100条,搜索全部设置为0，参数默认为0
+ * 设置搜索条数,不调用此函数默认搜索1000条,搜索全部设置为0，参数默认为0
  * @param {number | string} rowLimit 
  */
 CamlBuilder.prototype.RowLimit = function (rowLimit = 0) {

@@ -3,7 +3,7 @@ const EnvType = {
   Develop: "Develop",
   Product: "Product"
 }
-let env = EnvType.Develop;
+let env = EnvType.Local;
 
 
 let Config = {
@@ -15,7 +15,8 @@ let Config = {
     },
   },
   Lists: {
-    myTest: "myTest",
+    NewsList: "NewsList",
+    NewsType:"NewsType"
   },
   File: {
     Img: {

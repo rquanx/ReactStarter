@@ -66,8 +66,8 @@ export const LanguageType = Type;
 
 export default {
     T,
-    change: changeLanguage,
-    get: getLanguage,
-    inital,
-    type: LanguageType
+    Change: changeLanguage,
+    Get: getLanguage,
+    Inital:inital,
+    Type: LanguageType
 };

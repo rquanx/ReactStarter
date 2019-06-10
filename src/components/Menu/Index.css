@@ -1,0 +1,111 @@
+@import '../../assets/css/theme.css';
+/* 左侧导航 start */
+.sr-nav-layout{
+    width: $width;
+    height: 860px;
+    background: url(../../assets/img/sr-nav-bg.png) no-repeat top;
+    background-size: 100% 100%;
+    /* padding-top: 40px; */
+    position: fixed;
+    left: 0;
+    top: 48px;
+    z-index: 9;
+}
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink{
+    background: none !important;
+}
+
+
+.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .Nav-linkText,
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .Nav-linkText,
+.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .ms-Button-icon{
+    color: #a7afc1;
+    /*opacity: 1;*/
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .Nav-linkText{
+    font-size: 16px;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .Nav-linkText{
+    font-size: 14px;
+    margin-left: 20px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 140px;
+    text-align: left;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul{
+    background: rgba(29,48,75,0.72)
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .ms-Nav-chevronButton{
+    left: 180px;
+    color: #646e83;
+    opacity: 0.8;
+}
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-link,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-chevronButton,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link{
+    background: rgba(0, 0, 0, 0);
+}
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-link .Nav-linkText,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-chevronButton ,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .Nav-linkText,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link .Nav-linkText,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link .ms-Button-icon,
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-link .ms-Button-icon{
+    color: #fff;
+    opacity: 1;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .ms-Button-icon{
+    margin: 0 10px 0 25px;
+    font-size: 18px;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .ms-Button{
+    border: 0;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .subnav-icon{
+    border-left: 1px solid rgba(255,255,255,.2);
+    position: relative;
+    display: block;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .subnav-icon::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #646e83; 
+    border-radius: 50%;
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    z-index: 11;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .subnav-icon::after{
+    content: "";
+    width: 14px;
+    height: 14px;
+    background: rgba(255,255,255,0);
+    border-radius: 50%;
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 0;
+    z-index: 10;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li>.ms-Nav-compositeLink.is-selected .subnav-icon::before,
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li>.ms-Nav-compositeLink:hover .subnav-icon::before{
+    background: #fff;
+}
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li>.ms-Nav-compositeLink:hover .subnav-icon::after,
+.sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li>.ms-Nav-compositeLink.is-selected .subnav-icon::after{
+    background: rgba(255,255,255,0.3);
+}
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link::after{
+    display: none;
+}
+
+/* 左侧导航 end */

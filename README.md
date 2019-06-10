@@ -1,4 +1,4 @@
-#### 目录及约定
+### 目录及约定
 
 在文件和目录的组织上，使用约定的方式。
 
@@ -35,9 +35,9 @@
 
 
 
-#### 开始
+### 开始
 
-##### 环境准备
+#### 环境准备
 
 1.nodejs安装
 
@@ -55,11 +55,20 @@ npm -v
 由于网络问题，国内建议使用[淘宝NPM镜像](<https://npm.taobao.org/>)，以管理员权限打开cmd执行安装cnpm命令，安装完成后，可以查看cnpm版本即安装完成
 
 ```bash
+# 方法一：使用cnpm
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 # 安装cnpm
 
 cnpm -v
 # 查看cnpm版本
+
+
+# 方法二：将npm源替换为淘宝源
+npm get registry 
+# 读取当前设置
+
+npm config set registry http://registry.npm.taobao.org/
+# 设成淘宝源
 ```
 
 
@@ -70,13 +79,13 @@ cnpm -v
 
 
 
-##### 通过手脚架创建项目
+#### 通过手脚架创建项目
 
 未开发，从svn或已有的项目中获取前端框架
 
 
 
-##### 使用
+#### 使用
 
 1.安装依赖
 
@@ -99,7 +108,7 @@ cnpm i
 
 3.运行
 
-依次执行以下的命令，执行完命令后会自动打开浏览器，在打开的页面中选择打开html下的页面即可看到示例页面
+依次执行以下的命令，执行完命令后会自动打开浏览器，在打开的页面中选择打开html下的页面即可看到示例页面，如果打开的页面没看到有html，需等打包完成后刷新页面
 
 ```bash
 cnpm run dll	# 打包通用dll
@@ -118,9 +127,9 @@ cnpm run prod # 正式环境打包
 
 
 
-#### 指令说明  
+### 指令说明  
 
-##### 依赖安装指令
+#### 依赖安装指令
 
 cnpm i
 
@@ -140,7 +149,7 @@ cnpm i -S name
 
 
 
-##### 打包指令
+#### 打包指令
 
 cnpm run dll
     进行Dll打包，当打包配置中的dll有变化时需重新打包
@@ -159,17 +168,19 @@ cnpm run watch
 
 
 
-##### 其他指令
+#### 其他指令
 cnpm run lint
     代码规范检查
 
 
 
-#### 打包处理
+### 打包处理
 
-##### 单页/多页应用
+#### 单页/多页应用
 
-###### 单页应用
+##### 单页应用
+
+配置：config/index.js中的SPA设置为true
 
 入口：src/index.tsx
 
@@ -177,9 +188,11 @@ cnpm run lint
 
 
 
-###### 多页应用
+##### 多页应用
 
 多页应用pages下每一个文件夹都是一个应用
+
+配置：config/index.js中的SPA设置为false
 
 入口：src/pages/xx/index.tsx
 
@@ -202,9 +215,9 @@ module.exports = {
 
 
 
-##### CSS
+#### CSS
 
-1.可以支持类似Sass的语法，需要被import才可解析,注意模块化，互相影响
+支持类似Sass的语法，需要被import才可解析,已加载的css不会被清除注意样式冲突
 
 vscode提示错误可以在编辑器设置中增加以下内容
 ```json
@@ -215,72 +228,119 @@ vscode提示错误可以在编辑器设置中增加以下内容
 
 
 
-##### 图片、图标处理
+#### 图片、图标处理
 
 可以打包字体图标和图片
 图片：10k以下会转换成base64
 
 
 
+### 通用组件
 
+#### 消息提示
 
-#### 工具使用
-
-##### 消息提示
-
-###### Loading
+##### Loading
 
 ```js
-Loading.show();
-Loading.hide();
-Loading.hideAll();
+import Loading from "@components/Loading";
+Loading.show();	// 显示Loading
+Loading.hide();	// 关闭Loading，只对一次show生效
+Loading.hideAll();	// 强制关闭所有Loading，多次show
 ```
 
 
 
-###### Dialog
+##### Notification
 
 ```js
+// 对话框，需要点击确定或取消才能关闭
+import Notification from "@components/Notification";
 
-```
-
-
-
-
-
-###### Message
-
-```js
-
-```
-
-
-
-
-
-##### 多语言
-
-```js
-
+// 消息框初始化，
+Notification.Config({
+    beforeShow: Loading.hideAll,	// 显示弹框前强制关闭所有Loading
+    beforeRender: props => {
+      console.log("b", props);
+    },
+    afterRender: props => {
+      console.log("a", props);
+    }
+  });
 ```
 
 
 
 
 
+##### Notice
+
+```js
+// 消息提示，定时自动消失
+import Notice from "@components/Notice";
+
+Notice.Success("title");
+
+Notice.Error("title");
+```
 
 
-##### 日志
+
+
+
+
+
+### 工具使用
+
+#### 多语言
+
+1.入口文件中进行多语言初始化
+
+2.i18n设置对应的语言包
+
+3.多语言翻译规则
+
+> 1.按/划分对页面url解析，然后以划分的数组依次作为key查找最后一层的对象
+>
+> 2.翻译时先到最后一层的对象中查找，没有则到Common中查找，都没有则直接返回输入的key
+
+```react
+// 入口文件
+import Language from "@services/translation";
+Language.Inital();	//多语言初始化
+
+// 使用
+import {T} from "@services/translation";
+function translation() {
+    return <label>{T("i18n key")}</label>;
+}
+
+function translation() {
+    return <label>{T("i18n {模板}"),{ 模板: "key" }}</label>;
+}
+
+// 语言切换
+import Language from "@services/translation";
+Language.Change(Language.Type.en);//切换语言 ，进行页面刷新
+```
+
+
+
+
+
+
+
+#### 日志
 
 本地连接调试时建议禁用，防止上传了调试中产生的错误日志
 
-新建日志列表，列表字段,Time、Level、Agent、Message 全都是文本，Message为多行文本
+新建日志列表，列表字段：Time、Level、Agent、Message 都是文本类型，其中Message为多行文本
 默认每10s检查一次是否需要上传
 
 ```js
-import {logger } from "@services/log";
-logger.setting({                      // logger为全局单例，在入口中setting一次即可
-  JSOM: JSOM.create("", "错误列表名"), // 设置通过SharePoint日志存储的列表
+import {Logger } from "@services/log";
+Logger.Setting({                      // Logger为全局单例，在入口中setting一次即可
+  JSOM: JSOM.create("", "日志列表名"), // 设置通过SharePoint日志存储的列表
+  url: "",							// 服务器接口地址，url与JSOM只有一个有效
   getFolderPath: () => "", // 创建item时所在的文件夹路径
   autoLogAjax: false, // 禁止自动log ajax
   logAjaxFilter: (ajaxUrl: string, ajaxMethod) => {
@@ -295,18 +355,38 @@ logger.setting({                      // logger为全局单例，在入口中set
   }
 });
  // 使用
-logger.info();
-logger.warn();
-logger.error();
+Logger.info();
+Logger.warn();
+Logger.error();
 ```
 
 
 
+#### 数据模拟
+
+##### 启用
+
+1.config/index.js 中mock设为true
+
+2.src/config/index.js中Config.Features.Mock设为true或在url后拼接mock=1参数
+
+
+
+##### 配置
+
+[Mock文档](<https://github.com/nuysoft/Mock/wiki>)
+
+1.在src/services/mock下根据示例创建对应的模板。
+
+2.在src/services/mock/index.js中import模板并且添加到apiList中
 
 
 
 
-#### SharePoint本地调试
+
+
+
+### SharePoint本地调试
 
 1、将config/index.js中SP.enable设为true
 2、config下的private.json中输入下列信息，如果没有private.json文件，可以手动创建
@@ -314,10 +394,12 @@ logger.error();
 ```js
 {
   "siteUrl": "",
-  "strategy": "", //SP Online为 UserCredentials,本地为 OnpremiseUserCredentials
+  "strategy": "UserCredentials", 
   "username": "",
-  "domain": "", 
   "password: ""
 }
+// 以上为运行示例代码时需要使用的登录信息
+// strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials
+
 ```
 

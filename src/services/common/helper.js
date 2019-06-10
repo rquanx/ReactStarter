@@ -36,7 +36,7 @@ export function checkData(data, value = "") {
 }
 
 export function dateFormat(time) {
-    return time ? new Date(time).format("yyyy-MM-dd") : "";
+    return time ? new Date(time).format("yyyy-MM-dd HH:mm:ss") : "";
 }
 
 /**

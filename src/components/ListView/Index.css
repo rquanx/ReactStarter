@@ -73,7 +73,9 @@
     color: #666 !important;
     background-color: white;
 }
-
+.sr-list-box .checkbox{
+    width: 100px;
+}
 .sr-list-box label { /*flex布局让子元素水平垂直居中*/
     display: flex;
     align-items: center;
@@ -117,8 +119,6 @@
 }
 
 .sr-list-box input[type=checkbox]:checked:after {
-    content: "";
-    display: block;
     border: 1px solid #1890ff;
     background-color: #1890ff;
 }

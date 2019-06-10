@@ -30,7 +30,7 @@ function builderConfig(builder) {
             hot: true, //热替换
             open: true, // 默认打开浏览器  === 脚本运行时使用--open,
             inline: true, //自动刷新
-            watchContentBase: true,
+			// watchContentBase: true, // 会导致多次刷新
             writeToDisk: true,
             ...builder.proxy
         },

@@ -4,12 +4,12 @@ import App from "./App";
 import Language from "@services/translation";
 import Loading from "@components/Loading";
 import Notification from "@components/Notification";
-import { logger } from "@services/logger";
+import { Logger } from "@services/logger";
 import JSOM from "@services/jsom";
 declare var SP;
 
 // 入口、初始化
-Language.inital();
+Language.Inital();
 
 // 对话框初始化
 Notification.Config({
@@ -17,11 +17,11 @@ Notification.Config({
 });
 
 SP.SOD.executeFunc("sp.js", "SP.ClientContext", function() {
-  if (!location.href.indexOf("localhost")) {
+  if (location.href.indexOf("localhost") < 0) {
     /**
      * 新建一个列表列表字段,Time、Level、Agent、Message 全都是文本，Message为多行文本
      */
-    logger.setting({
+    Logger.Setting({
       // logger为全局单例，在入口中setting一次即可
       JSOM: JSOM.create("", "Log"), // 设置通过SharePoint日志存储的列表
       getFolderPath: () => {
@@ -41,9 +41,9 @@ SP.SOD.executeFunc("sp.js", "SP.ClientContext", function() {
       }
     });
     // 使用
-    // logger.info();
-    // logger.warn();
-    // logger.error();
+    // Logger.Info();
+    // Logger.Warn();
+    // Logger.Error();
   }
 
   ReactDOM.render(<App />, document.getElementById("app"));

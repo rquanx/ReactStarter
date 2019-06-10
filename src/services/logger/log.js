@@ -9,7 +9,7 @@ function defaultLog(...args) {
 
 const methods = ["info","error","warn"];
 
-const LOG = {
+let log = {
   info: defaultLog,
   error: defaultLog,
   warn: defaultLog
@@ -43,15 +43,15 @@ const LOG = {
  * @param {{JSOM?: any,getFolderPath?: any,url?: string,autoLogError?: boolean,autoLogRejection?: boolean,autoLogAjax?: boolean,logAjaxFilter?: any,stylize?: any,showDesc?: any,customDesc?: any,interval?: number,maxErrorReq?: number}} param
  */
 export const setting = function(param = undefined) {
-  LOG = new Lajax(param);
+  log = new Lajax(param);
   methods.forEach((method) => {
-    logger[method] = LOG[method].bind(LOG);
+    logger[method] = log[method].bind(log);
   });
 };
 
-export let logger = {
-  info: LOG.info,
-  error: LOG.error,
-  warn: LOG.warn,
-  setting
+export let Logger = {
+  Info: log.info,
+  Error: log.error,
+  Warn: log.warn,
+  Setting: setting
 };
