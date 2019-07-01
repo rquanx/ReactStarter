@@ -218,7 +218,6 @@ class JSOM {
         let info = this.ServiceInfo;
 
         function getPageItem(res, rej) {
-            try {
                 let olist = JSOM.getList(info);
                 let camlQuery = JSOM.getCamlQuery(caml, pageInfo);
                 let collListItem = olist.getItems(camlQuery);
@@ -230,10 +229,7 @@ class JSOM {
                     info.context.load(collListItem);
                 }
                 info.context.executeQueryAsync(onSuccess, onError);
-            } catch (e) {
-                let result = new ResultMessage(false, e, e.message);
-                rej(result);
-            }
+
 
             function onSuccess(sender, args) {
                 let data;

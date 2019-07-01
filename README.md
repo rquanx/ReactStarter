@@ -331,18 +331,40 @@ Language.Change(Language.Type.en);//切换语言 ，进行页面刷新
 
 #### 日志
 
-本地连接调试时建议禁用，防止上传了调试中产生的错误日志
+##### 功能
 
-新建日志列表，列表字段：Time、Level、Agent、Message 都是文本类型，其中Message为多行文本
-默认每10s检查一次是否需要上传
+1、异常捕获
+
+> 自动记录所有未捕获的异常
+
+
+
+2、定时发送
+
+> 默认每隔10S进行一次上传
+
+
+
+3、日志离线存储
+
+> 日志记录在localStorage中，发送成功后会清除已发送的
+>
+> 关闭页面时如果有未发送的日志会存储在localStorage，等待下次进行发送
+
+
+
+##### 使用
 
 ```js
-import {Logger } from "@services/log";
-Logger.Setting({                      // Logger为全局单例，在入口中setting一次即可
+import { Logger } from "./logger";
+// Logger为全局单例，在入口进行一次setting即可
+Logger.Setting({                     
   JSOM: JSOM.create("", "日志列表名"), // 设置通过SharePoint日志存储的列表
-  url: "",							// 服务器接口地址，url与JSOM只有一个有效
-  getFolderPath: () => "", // 创建item时所在的文件夹路径
-  autoLogAjax: false, // 禁止自动log ajax
+  getFolderPath: () => "", 			 // JSOM创建item时所在的文件夹路径
+    
+  url: "",			  // 服务器接口地址，url与JSOM只有一个有效
+  autoLogAjax: false, // 禁止自动记录ajax的发送
+    
   logAjaxFilter: (ajaxUrl: string, ajaxMethod) => {
   // ajax过滤函数，返回false的不进行log，启用autoLogAjax生效
     let filterList = [
@@ -354,11 +376,68 @@ Logger.Setting({                      // Logger为全局单例，在入口中set
     return filterList.every((url) => !(ajaxUrl.indexOf(url) > -1))
   }
 });
- // 使用
-Logger.info();
-Logger.warn();
-Logger.error();
+
+// 使用
+Logger.Info();
+Logger.Warn();
+Logger.Error();
+
+// 发送格式
+// 前端以Post发送日志数组
+logQueue = [{
+    time: "时间",
+    level: "info/warn/error",
+    message: "记录的信息",
+    url: "浏览器当前url"，
+    agent: "浏览器信息"
+},...]
 ```
+
+
+
+##### 配置项
+
+```js
+/**
+ * JSOM: JSOM操作对象，JSOM.create("site","list")
+ *
+ * getFolderPath: JSOM上传路径 () => "path"
+ *
+ * url: 服务器接口url;
+ *
+ * autoLogError: 是否自动记录未捕获错误;
+ *
+ * autoLogRejection 是否自动记录 Promise 错误;
+ *
+ * autoLogAjax: 是否自动记录ajax;
+ *
+ * logAjaxFilter: ajax日志过滤;
+ *
+ * stylize: console.log输出样式;
+ *
+ * showDesc: console.log描述信息;
+ *
+ * customDesc: 自定义描述信息;
+ *
+ * interval: 日志发送周期;
+ *
+ * maxErrorReq: 日志发送最大试错数,错误次数超过后不再发送日志;
+ */
+```
+
+
+
+
+
+##### JSOM
+
+需新建日志列表，列表字段：Time、Level、Agent、Message 都是文本类型，其中Message为多行文本
+
+
+
+##### 注意事项
+
+本地连接调试时建议禁用，防止上传了调试中产生的错误日志
 
 
 
@@ -396,7 +475,7 @@ Logger.error();
   "siteUrl": "",
   "strategy": "UserCredentials", 
   "username": "",
-  "password: ""
+  "password": ""
 }
 // 以上为运行示例代码时需要使用的登录信息
 // strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials

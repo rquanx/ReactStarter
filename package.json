@@ -1,9 +1,9 @@
 {
   "name": "react-framework",
-  "version": "2.4.0",
+  "version": "0.1.0",
   "private": true,
   "main": "master",
-    "browserslist": ["defaults", "ie >= 10"],
+  "browserslist": ["defaults", "ie >= 10"],
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.12",

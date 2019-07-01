@@ -57,6 +57,9 @@ builder.usePlugin([
     },{
         from: 'src/assets/css',
         to: 'assets/css'
+    },{
+        from: 'src/assets/font',
+        to: 'assets/font'
     }]),
 ]);
 

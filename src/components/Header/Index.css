@@ -1,12 +1,13 @@
+@import '../../assets/css/theme.css';
 /* 顶部 start */
 .sr-header{
     width: 100%;
-    height: 48px;
-    background: #003c72;
+    min-height: $headerwidth;
+    line-height: $headerwidth;
+    background: #1b82f1;
 }
 .sr-header-layout{
     padding: 0 21px 0 21px;
-    height: 48px;
 }
 .sr-header-left{
     width: 62%;
@@ -48,13 +49,15 @@
 .sr-header-logo h1 a{
     display: block;
 }
+.sr-header-logo img{
+    width: 30px;    
+    margin-top: 12px;
+}
 .sr-system-name{
     float: left;
-    line-height: 48px;
     margin-left: 20px;
 }
 .sr-system-name  span{
-    font-family: FZHZGBJW--GB1-0;
 	font-size: 16px;
 	color: #ffffff;
 }
@@ -100,13 +103,12 @@
     font-weight: bold;
 }
 .sr-language{
-    float: left;
+    float: right;
     width: 117px;
-    /* margin-left: 30px; */
     margin-right: 20px;
 }
 .sr-language .ms-Dropdown-container{
-    margin-top: 11px;
+    margin-top: 13px;
     background: rgba(16, 22, 46, .15);
     border-radius: 4px;
     height: 30px;
@@ -126,25 +128,38 @@
     float: left;
     color: #fff;
 }
+.sr-user .sr-user-picture{
+    width: 52px;
+    text-align: center;
+    height: $headerwidth;
+}
+.sr-user .sr-user-picture:hover{
+    background-color: #2774c7;
+}
 .sr-user{
     float: right;
-    line-height: 48px;
     cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .sr-user .sr-user-picture img{
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    overflow: hidden;
-    margin-top: 4px;
+    margin-top:9px;
 }
 .sr-user .sr-user-name{
     margin-right: 10px;
+    height: $headerwidth;
     max-width: 100px;
+    min-width: 50px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: right;
+    display: none;
 }
 .sr-exit-current-user {
     position: absolute;

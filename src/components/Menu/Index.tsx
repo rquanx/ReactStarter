@@ -43,7 +43,8 @@ export class Menu extends React.Component<INavProps, {}> {
             var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             var currentTop = offsetTOP - scrollTop
             var nav = document.getElementById("Nav");
-            if (scrollTop > 48) {
+            var headerWidth=(document.getElementsByClassName("sr-header")[0] as HTMLElement).offsetHeight;
+            if (scrollTop > headerWidth) {
                 nav.style.top = "0";
             } else {
                 nav.style.top = "" + currentTop + "px";

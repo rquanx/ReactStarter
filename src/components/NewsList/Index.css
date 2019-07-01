@@ -1,0 +1,42 @@
+.sr-newslist{
+    width: 500px;
+    table{
+        width:100%;
+        tbody{
+            tr{
+                &:nth-child(even){
+                    background-color: #eef4fb;
+                }
+                .sr-table-head{
+                    padding: 0 10px;
+                    border-left: 5px solid #084c8a;
+                    font-weight: bolder;
+                }
+                .sr-table-more{
+                    color: #4285f4;
+                    cursor: pointer;
+                }
+                .sr-table-title{
+                    display: inline-block;
+                    max-width: 350px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: pointer;
+                    padding: 10px 0 10px 20px;
+                }
+                .sr-table-time{
+                    max-width: 150px;
+                    text-align: right;
+                    padding: 10px 20px 10px 0;
+                }
+                .sr-table-nodata{
+                    text-align: center;
+                }
+                td{
+                    box-sizing: border-box;
+                }    
+            }
+        }
+    }
+}

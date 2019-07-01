@@ -13,6 +13,9 @@ import { T } from "@services/translation";
 const Home = lazy(() => loadable(import(/* webpackChunkName: "Home" */ './pages/home')));
 const ErrorPage = lazy(() => loadable(import(/* webpackChunkName: "ErrorPage" */ './pages/error_page')));
 const ListCRUD = lazy(() => loadable(import(/* webpackChunkName: "ListCRUD" */ './pages/examples/列表增删查改')));
+const NewsDetailPage = lazy(() => loadable(import(/* webpackChunkName: "NewsDetailPage" */ './pages/examples/新闻详情')));
+const NewsListPage = lazy(() => loadable(import(/* webpackChunkName: "NewsListPage" */ './pages/examples/新闻列表')));
+const CarouselPage = lazy(() => loadable(import(/* webpackChunkName: "CarouselPage" */ './pages/examples/轮播图')));
 
 export interface Info {
     userInfo: any;
@@ -47,6 +50,25 @@ export class App extends React.Component<{}, IAppState> {
                     url: '/html/App.html#/listCRUD',
                     icon: 'Table',
                     key: 'listCRUD'
+                },
+                {
+                    name: T('新闻详情'),
+                    url: '/html/App.html#/news-detail-page',
+                    icon: 'News',
+                    key: 'news-detail-page'
+                },
+                {
+                    name: T('新闻列表'),
+                    url: '/html/App.html#/news-list-page',
+                    icon: 'AllApps',
+                    key: 'news-list-page'
+                }
+                ,
+                {
+                    name: T('轮播图'),
+                    url: '/html/App.html#/carousel-page',
+                    icon: 'AspectRatio',
+                    key: 'carousel-page'
                 }
             ]
         }]
@@ -65,6 +87,11 @@ export class App extends React.Component<{}, IAppState> {
                             <Switch>
                                 <Route exact path="/" component={Home} ></Route>
                                 <Route path="/listCRUD" component={ListCRUD}  ></Route>
+                                <Route path="/news-detail-page" component={NewsDetailPage}  ></Route>
+                                <Route path="/news-list-page" component={NewsListPage}  ></Route>
+                                <Route path="/carousel-page" component={CarouselPage}  ></Route>
+
+                                
                                 <Route component={ErrorPage} ></Route>
                             </Switch>
                         </Suspense>
@@ -91,6 +118,7 @@ export class App extends React.Component<{}, IAppState> {
         try {
             let userInfo = await this.getUserInfo();
             info = await this.getSiteUserInfo(userInfo);
+            console.log(info)
             this.setState({
                 info
             });

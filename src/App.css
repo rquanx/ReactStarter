@@ -8,20 +8,6 @@ body,html,h1,li,ul{
   box-sizing: border-box;
   padding: 20px;
 }
-.app {
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      margin-bottom: 10px
-    }
-    ul li {
-      display: inline;
-      margin-right: 100px;
-    }
-    ul li a {
-        text-decoration: none;
-    }
-  }
+
   
   

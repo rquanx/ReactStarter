@@ -14,7 +14,7 @@ import { T } from "@services/translation";
 import { Filter, ISearchInfo } from './Filter';
 import Notice from "@components/Notice";
 import { Logger } from "@services/logger";
-import Example from '@srcservices/modal/example';
+import Example from '@srcservices/modal/listCRUD';
 
 interface IListCRUDState {
     items: ICell[][];

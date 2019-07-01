@@ -18,7 +18,7 @@ let config = {
         },
         // build 根据配置打包
         template: {
-                enable: true, // 是否启用模板生成，没改动时关闭，加快打包
+                enable: false, // 是否启用模板生成，没改动时关闭，加快打包
                 scripts: ["../dll/Test.dll.js"], // 注入到模板的scripts
                 css: ["../assets/css/Common.css"], // 注入到模板的css
         },
@@ -51,7 +51,9 @@ let config = {
                 // "office-ui-fabric-react/lib/Pickers",
                 // 引入整个office-ui-fabric-react，Pickers需要单独声明
                 "office-ui-fabric-react/lib/Pickers",
+                "office-ui-fabric-react/lib/Utilities",
                 "office-ui-fabric-react/lib" // 或"office-ui-fabric-react"
+                
         ])]
 }
 module.exports = config;

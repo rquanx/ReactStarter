@@ -23,6 +23,8 @@ export default {
         确定: "Submit",
         取消: "Cancel",
         请输入内容: "Please Enter the Content",
-        "列表{key}": "List{key}"
+        "列表{key}": "List{key}",
+        更多: "More",
+        我的新闻: "My News"
     }
 }

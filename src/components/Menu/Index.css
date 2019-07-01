@@ -3,27 +3,27 @@
 .sr-nav-layout{
     width: $width;
     height: 860px;
-    background: url(../../assets/img/sr-nav-bg.png) no-repeat top;
+    background: #d4d4d4;
     background-size: 100% 100%;
-    /* padding-top: 40px; */
     position: fixed;
     left: 0;
-    top: 48px;
+    top: $headerwidth;
     z-index: 9;
 }
 .sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink{
     background: none !important;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
-
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover{
+    background-color: #c8c8c8 !important;
+}
 
 .sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .Nav-linkText,
 .sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .Nav-linkText,
 .sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .ms-Button-icon{
-    color: #a7afc1;
+    color: #212121;
     /*opacity: 1;*/
-}
-.sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .Nav-linkText{
-    font-size: 16px;
 }
 .sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .Nav-linkText{
     font-size: 14px;
@@ -49,17 +49,14 @@
 .sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link{
     background: rgba(0, 0, 0, 0);
 }
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-link .Nav-linkText,
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-chevronButton ,
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .Nav-linkText,
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link .Nav-linkText,
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link .ms-Button-icon,
-.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink:hover .ms-Nav-link .ms-Button-icon{
-    color: #fff;
-    opacity: 1;
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink a>div{
+    border-left: 4px solid transparent
+}
+.sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected a>div {
+    border-left: 4px solid #1b82f1;
 }
 .sr-nav-layout .ms-Nav-groupContent>ul>li>.ms-Nav-compositeLink .ms-Button-icon{
-    margin: 0 10px 0 25px;
+    margin: 0 10px 0 18px;
     font-size: 18px;
 }
 .sr-nav-layout .ms-Nav-groupContent>ul>li>ul>li .ms-Button{
@@ -106,6 +103,20 @@
 }
 .sr-nav-layout .ms-Nav-navItem .ms-Nav-compositeLink.is-selected .ms-Nav-link::after{
     display: none;
+}
+.sr-nav-layout ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px
+}
+.sr-nav-layout ul li {
+    display: inline;
+    margin-right: 100px;
+    margin: 0px auto;
+}
+.sr-nav-layout ul li a {
+    text-decoration: none;
 }
 
 /* 左侧导航 end */

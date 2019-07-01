@@ -1,8 +1,8 @@
-export function mock(url, type, data) {
+export function mock(path, type, template) {
     return {
-        url,
+        path,
         type,
-        data
+        template
     }
 }
 

@@ -8,7 +8,8 @@ import { T, changeLanguage, getLanguage, LanguageType } from "@services/translat
 import Config from "@config";
 import './Index.css';
 initializeIcons(/* optional base url */);
-
+import Logo from '../../assets/img/sr-logo.png'
+import defaultPerson from '../../assets/img/sr-personal-photo.png'
 export interface IUserInfo {
     name: string;
     photo: string;
@@ -47,8 +48,8 @@ export class Header extends React.Component<IHeaderProps, {
     render() {
         let userInfo: IUserInfo = {
             name: this.props.info ? this.props.info.userInfo.Title : "",
-            // photo: this.props.info ? this.props.info.userInfo.PicUrl : <Config className="File Img Path"></Config> + "sr-personal-photo.png",
-            photo: Config.File.Img.Path + "/sr-personal-photo.png",
+            photo: this.props.info ? this.props.info.userInfo.PicUrl : Config.File.Img.Path + "/sr-personal-photo.png",
+            // photo: Config.File.Img.Path + "/sr-personal-photo.png",
             id: this.props.info ? this.props.info.userInfo.ID : "",
             department: this.props.info ? this.props.info.userInfo.Department : "",
         };
@@ -58,8 +59,8 @@ export class Header extends React.Component<IHeaderProps, {
                     <div className="sr-header-left">
                         <div className="sr-header-logo">
                             <h1>
-                                <a href="/">
-                                    <img src={Config.File.Img.Path + "/sr-logo.png"} alt="" />
+                                <a href="/html/App.html">
+                                    <img src={Logo} alt="" />
                                 </a>
                             </h1>
                         </div>
@@ -70,13 +71,6 @@ export class Header extends React.Component<IHeaderProps, {
                     </div>
                     <div className="sr-header-right">
                         <div className="sr-search-box">
-                        </div>
-                        <div className="sr-language">
-                            <Dropdown
-                                defaultSelectedKey={this.state.languageItem ? this.state.languageItem.key : undefined}
-                                options={this.languageOptions}
-                                onChanged={this.onChangeLanguage}
-                            />
                         </div>
                         <div className="sr-user">
                             <div className="sr-user-name"
@@ -94,17 +88,24 @@ export class Header extends React.Component<IHeaderProps, {
                                         this._basicComboBox.current.focus(true);
                                     }
                                 }}>
-                                    <img src={userInfo.photo} alt="" />
+                                    <img src={userInfo.photo} alt="" onError={(e) => { (e.target as any).onerror = null; (e.target as any).src = defaultPerson }}/>
                             </div>
                             <div className="sr-exit-current-user">
                                 <ComboBox
                                     allowFreeform
                                     autoComplete="on"
-                                    options={[{ key: 'changUser', text: T("切换用户登陆") }]}
+                                    options={[{ key: 'changUser', text: T("切换用户") }]}
                                     componentRef={this._basicComboBox}
-                                    onItemClick={()=>window.location.href='/_layouts/15/closeConnection.aspx?loginasanotheruser=true&Source='+window.location.href}
+                                    onItemClick={() => window.location.href = '/_layouts/15/closeConnection.aspx?loginasanotheruser=true&Source=' + window.location.href}
                                 />
                             </div>
+                        </div>
+                        <div className="sr-language">
+                            <Dropdown
+                                defaultSelectedKey={this.state.languageItem ? this.state.languageItem.key : undefined}
+                                options={this.languageOptions}
+                                onChanged={this.onChangeLanguage}
+                            />
                         </div>
                     </div>
                 </div>

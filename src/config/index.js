@@ -16,8 +16,10 @@ let Config = {
   },
   Lists: {
     NewsList: "NewsList",
-    NewsType:"NewsType"
+    NewsType:"NewsType",
+    News:"News"
   },
+
   File: {
     Img: {
       Path: env === EnvType.Local ? "../assets/img" : "/recordmanagement/Style Library/Carsgen/img/"
