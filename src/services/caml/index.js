@@ -28,9 +28,9 @@ class XmlBuilder {
  */
 XmlBuilder.CreateElement = function (tagName, property, children) {
     let result = "";
-    let propertyStr = XmlBuilder.renderProps(property);
+    let propertyStr = XmlBuilder.RenderProps(property);
     if (children || children === 0) {
-        let childrenStr = XmlBuilder.renderChildren(children);
+        let childrenStr = XmlBuilder.RenderChildren(children);
         result = XmlBuilder.Tag(tagName, propertyStr, childrenStr);
     } else {
         result = XmlBuilder.AutoCloseTag(tagName, propertyStr);
@@ -42,7 +42,7 @@ XmlBuilder.CreateElement = function (tagName, property, children) {
  * 拼接属性字符串
  * @param {string | {Object} property
  */
-XmlBuilder.renderProps = function (property) {
+XmlBuilder.RenderProps = function (property) {
     let propertyStr = "";
     if (property) {
         if (typeof (property) === "string") {
@@ -60,12 +60,12 @@ XmlBuilder.renderProps = function (property) {
  * 递归拼接子元素
  * @param {any} children
  */
-XmlBuilder.renderChildren = function (children) {
+XmlBuilder.RenderChildren = function (children) {
     let childrenStr = "";
     if (Array.isArray(children)) {
         children.forEach((item) => {
             if (Array.isArray(item)) {
-                childrenStr += XmlBuilder.renderChildren(item);
+                childrenStr += XmlBuilder.RenderChildren(item);
             } else if (typeof (item) === "object") {
                 childrenStr += XmlBuilder.CreateElement(item.tagName, item.property, item.children);
             } else if (typeof (item) === "string") {
@@ -165,6 +165,7 @@ CamlEnum.ValueType = {
     Integer: "Integer",
     Url: "Url", // 检查
     FSObjType: "FSObjType", //文件夹
+    Boolean: "Boolean"
 };
 
 /** 标签选项 */
@@ -276,6 +277,15 @@ CamlInfo.ErrorType = {
     NestedLimit: `Error, Number of nesting layers is over ${CamlInfo.Options.MaxNested}`
 };
 
+function getCamlDateTime(date) {
+  if (date) {
+    return `${date.getFullYear()}-${date.getMonth() +
+      1}-${date.getDate()}T${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  } else {
+    return "";
+  }
+}
+
 /** @constructor */
 let CamlBuilder = function () {
     this.CamlInfo = new CamlInfo();
@@ -350,13 +360,16 @@ CamlBuilder.CaseValueType = function (valueType, value) {
         case CamlEnum.ValueType.DateTime:
             {
                 property.IncludeTimeValue = "TRUE";
+                if (typeof value === "object") {
+                    value = getCamlDateTime(value);
+                }
                 break;
             }
         case CamlEnum.ValueType.Date:
             {
                 property.Type = CamlEnum.ValueType.DateTime;
-                if (typeof value === "object" && value.toISOString) {
-                    value = value.toISOString();
+                if (typeof value === "object") {
+                    value = getCamlDateTime(value);
                 }
                 break;
             }
@@ -563,7 +576,7 @@ CamlBuilder.prototype.Scope = function (scope = CamlEnum.ScopeType.RecursiveAll)
 };
 
 /**
- * 设置搜索条数,不调用此函数默认搜索1000条,搜索全部设置为0，参数默认为0
+ * 设置搜索条数,不调用此函数默认搜索100条,搜索全部设置为0，参数默认为0
  * @param {number | string} rowLimit 
  */
 CamlBuilder.prototype.RowLimit = function (rowLimit = 0) {
@@ -606,7 +619,7 @@ CamlBuilder.prototype.ToString = function () {
     if (this.CamlInfo.Condition.CreateElement) {
         return this.CamlInfo.Condition.CreateElement();
     } else {
-        return XmlBuilder.renderChildren(this.CamlInfo.Condition);
+        return XmlBuilder.RenderChildren(this.CamlInfo.Condition);
     }
 };
 

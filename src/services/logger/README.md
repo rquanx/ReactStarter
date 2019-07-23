@@ -93,6 +93,8 @@ logQueue = [{
  * interval: 日志发送周期;
  *
  * maxErrorReq: 日志发送最大试错数,错误次数超过后不再发送日志;
+ *
+ * customParams: 对Post的数组日志进行额外处理
  */
 ```
 

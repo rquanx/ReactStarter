@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import Notification, { INotificationProps } from "./Notification";
+import Notification from "./Notification";
+import {INotificationProps,Notice} from "./Notification/index.d";
 
 let Instance: INotificationProps[] = [];
 let Div = null;
@@ -12,7 +13,7 @@ function onClick(callback = (e) => {}) {
     }
 }
 
-function update(newConfig) {
+function update(newConfig: INotificationProps) {
     if (Instance.length < 1) {
         // 没有时直接push，且显示这个对话框
         Instance.push(newConfig);
@@ -31,7 +32,7 @@ function update(newConfig) {
     render(newConfig);
 }
 
-function showConfirm(newConfig) {
+function showConfirm(newConfig: INotificationProps) {
     if (Instance.length < 1) {
         // 没有时直接push，且显示这个对话框
         Instance.push(newConfig);
@@ -81,7 +82,7 @@ function render(props: INotificationProps) {
     ReactDOM.render(<Notification {...props} />, Div);
 }
 
-const Confirm = (config: INotificationProps) => {
+const Confirm: Notice = (config) => {
     
 
     if (!Div) {
@@ -105,5 +106,4 @@ const Confirm = (config: INotificationProps) => {
         closeAll
     };
 }
-
 export default Confirm;

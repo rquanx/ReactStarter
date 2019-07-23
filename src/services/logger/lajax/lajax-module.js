@@ -129,6 +129,9 @@ class Lajax {
     // 自定义的描述信息内容
     this.customDesc = config.customDesc;
 
+    // 对发送的数据进行额外处理
+    this.customParams = config.customParams;
+
     // 默认的间隔发送时间（毫秒）
     const defaultInterval = 10000;
 
@@ -562,7 +565,7 @@ class Lajax {
         "Content-Type",
         "application/json; charset=utf-8"
       );
-      this.xhrSend.call(this.xhr, JSON.stringify(this.queue));
+      this.xhrSend.call(this.xhr, this.customParams && typeof this.customParams === "function" ? this.customParams(JSON.stringify(this.queue)) : JSON.stringify(this.queue));
       this.xhr.onreadystatechange = () => {
         if (this.xhr.readyState === XMLHttpRequest.DONE) {
           if (this.xhr.status >= 200 && this.xhr.status < 400) {

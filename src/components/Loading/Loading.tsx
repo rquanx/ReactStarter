@@ -2,16 +2,18 @@ import * as React from 'react';
 import { Modal } from 'office-ui-fabric-react/lib/Modal';
 import { Spinner, SpinnerSize } from 'office-ui-fabric-react/lib/Spinner';
 import "./Loading.css";
-interface ILoadingProps {
-    visible?: boolean
+export interface ILoadingProps {
+    visible?: boolean;
+    children?: any;
 }
 
+export interface ILoading extends React.SFC<ILoadingProps> {
+    show?: () => void;
+    hide?: () => void;
+    hideAll?: () => void;
+}
 
-Loading.show = null;
-Loading.hide = null;
-Loading.hideAll = null;
-
-export function Loading(props: ILoadingProps) {
+export let Loading: ILoading = (props: ILoadingProps) => {
     return (
         <Modal
             isOpen={props.visible === undefined ? true : props.visible}
@@ -23,4 +25,10 @@ export function Loading(props: ILoadingProps) {
         </Modal>
     )
 }
+
+
+Loading.show = null;
+Loading.hide = null;
+Loading.hideAll = null;
+
 export default Loading;

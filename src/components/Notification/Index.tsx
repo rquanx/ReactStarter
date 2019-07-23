@@ -1,24 +1,22 @@
-import Notification, { INotificationProps } from "./Notification";
-import Comfirm from "./Confirm";
+import Notification from "./Notification/index";
+import Confirm from "./Confirm";
 import { Mode } from "./Enum";
 
-
-Notification.Confirm = (props: INotificationProps) => {
+Notification.Confirm = (props?) => {
     const config = {
         ...props,
         mode: Mode.Confirm,
         icon: undefined,
     };
-    return Comfirm(config);
+    return Confirm(config);
 }
 
-Notification.Error = (props: INotificationProps) => {
+Notification.Error = (props?) => {
     const config = {
         ...props,
         mode: Mode.Error,
         icon: undefined,
     };
-    return Comfirm(config);
+    return Confirm(config);
 }
-
 export default Notification;

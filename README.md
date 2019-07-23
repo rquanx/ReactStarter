@@ -472,10 +472,10 @@ logQueue = [{
 
 ```js
 {
-  "siteUrl": "",
+  "siteUrl": "https://serviceme.sharepoint.com/sites/ExamplesAndLib",
   "strategy": "UserCredentials", 
-  "username": "",
-  "password": ""
+  "username": "test001@serviceme.onmicrosoft.com",
+  "password": "1qaz@WSX"
 }
 // 以上为运行示例代码时需要使用的登录信息
 // strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials

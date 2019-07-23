@@ -19,7 +19,7 @@ let config = {
         // build 根据配置打包
         template: {
                 enable: false, // 是否启用模板生成，没改动时关闭，加快打包
-                scripts: ["../dll/Test.dll.js"], // 注入到模板的scripts
+                scripts: [], // 注入到模板的scripts
                 css: ["../assets/css/Common.css"], // 注入到模板的css
         },
         mock: false, // 是否打包mock
@@ -55,5 +55,8 @@ let config = {
                 "office-ui-fabric-react/lib" // 或"office-ui-fabric-react"
                 
         ])]
-}
+};
+
+config.template.scripts = [`../dll/${config.library}.dll.js`,...config.template.scripts]
+
 module.exports = config;

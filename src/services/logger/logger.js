@@ -32,7 +32,8 @@ function defaultLog(...args) {
  *
  * maxErrorReq: 日志发送最大试错数;
  *
- * @param {{JSOM?: any,getFolderPath?: any,url?: string,autoLogError?: boolean,autoLogRejection?: boolean,autoLogAjax?: boolean,logAjaxFilter?: any,stylize?: any,showDesc?: any,customDesc?: any,interval?: number,maxErrorReq?: number}} param
+ * customParams: 对Post的数组日志进行额外处理
+ * @param {{customParams?: any,JSOM?: any,getFolderPath?: any,url?: string,autoLogError?: boolean,autoLogRejection?: boolean,autoLogAjax?: boolean,logAjaxFilter?: any,stylize?: any,showDesc?: any,customDesc?: any,interval?: number,maxErrorReq?: number}} param
  */
 function setting(param = undefined) {
   logger = new Lajax(param);
