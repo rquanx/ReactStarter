@@ -482,3 +482,31 @@ logQueue = [{
 
 ```
 
+### vscode本地调试
+1、安装debugger for chrome插件
+2、配置lanuchjson
+
+```js
+{
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:8888",
+      "webRoot": "${workspaceFolder}",
+      "skipFiles": ["node_modules/**"],
+      "sourceMaps": true,
+      "disableNetworkCache": true,
+      "breakOnLoad": true,
+      "sourceMapPathOverrides": {
+        "webpack:///{library}/./*": "${webRoot}/*",
+        "webpack://{library}/./src/*": "${webRoot}/src/*",
+        "webpack://{library}/./node_modules/*": "${webRoot}/node_modules/*",
+        "meteor://💻app/*": "${webRoot}/*"
+      }
+  // {library}根据config进行配置
+```
+
+3、修改config/index.js中的debug为true
+4、cnpm run watch
+5、F5开始debug
+

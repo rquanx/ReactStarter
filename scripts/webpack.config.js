@@ -117,4 +117,4 @@ builder.setProxy(option.SP.enable ? proxy : {
     port
 });
 
-module.exports = smp.wrap(builder.Config(builderConfig));
+module.exports = smp.wrap(builder.Config(builderConfig,option));

@@ -1,7 +1,7 @@
 let config = {
         SPA: true, // 是否是单页应用,启用时以src/Index为入口，不启动pages下每个文件夹都是入口
         SP: {
-                enable: true, // 是否启动SharePoint调试
+                enable: false, // 是否启动SharePoint调试
                 scrpts: ["../assets/sp/initstrings.js", // SharePoint调试注入的scripts，本地获取
                         "../assets/sp/init.js",
                         "../assets/sp/MicrosoftAjax.js",
@@ -18,10 +18,12 @@ let config = {
         },
         // build 根据配置打包
         template: {
-                enable: false, // 是否启用模板生成，没改动时关闭，加快打包
+                enable: true, // 是否启用模板生成，没改动时关闭，加快打包
                 scripts: [], // 注入到模板的scripts
                 css: ["../assets/css/Common.css"], // 注入到模板的css
         },
+        debug: false     // 启用vscode debug模式，需配置launch.json
+        ,
         mock: false, // 是否打包mock
         polyfill: true, // 是否打包polyfill
         analyzer: false, // 是否启动打包分析,打包结束会启动浏览器显示各个包的大小

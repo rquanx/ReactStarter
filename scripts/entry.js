@@ -11,7 +11,9 @@ function getEntry(pagesPath) {
             entry[item] = `${pagesPath}${item}`;
         }
     });
+    console.log("entry is :",entry);
     return entry;
+
 }
 
 function globalImport(entry, importList) {
