@@ -32,6 +32,7 @@ import { Logger } from "./logger";
 Logger.Setting({                     
   JSOM: JSOM.create("", "日志列表名"), // 设置通过SharePoint日志存储的列表
   getFolderPath: () => "", 			 // JSOM创建item时所在的文件夹路径
+    								// 注：如果文件夹不存会报错，不会自动创建
     
   url: "",			  // 服务器接口地址，url与JSOM只有一个有效
   autoLogAjax: false, // 禁止自动记录ajax的发送
@@ -110,4 +111,6 @@ logQueue = [{
 
 ##### 注意事项
 
-本地连接调试时建议禁用，防止上传了调试中产生的错误日志
+1、本地连接调试时建议禁用，防止上传了调试中产生的错误日志
+
+2、SharePoint路径文件夹需要提前创建

@@ -3,7 +3,10 @@
   "version": "2.4.0",
   "private": true,
   "main": "master",
-  "browserslist": ["defaults", "ie >= 10"],
+  "browserslist": [
+    "defaults",
+    "ie >= 10"
+  ],
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@fortawesome/fontawesome-svg-core": "^1.2.12",
@@ -25,6 +28,7 @@
     "dll": "webpack --config ./scripts/webpack.config.dll.js"
   },
   "devDependencies": {
+    "@types/mockjs": "^1.0.2",
     "@types/react": "^16.8.14",
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.2",

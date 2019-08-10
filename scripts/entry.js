@@ -11,20 +11,18 @@ function getEntry(pagesPath) {
             entry[item] = `${pagesPath}${item}`;
         }
     });
-    console.log("entry is :",entry);
     return entry;
-
 }
 
 function globalImport(entry, importList) {
     let keys = Object.keys(entry);
     if (Array.isArray(importList)) {
         keys.forEach((key) => {
-            entry[key] = [...importList, entry[key]];
+            entry[key] = [...importList, ...(Array.isArray(entry[key]) ? entry[key] : [entry[key]])];
         });
     } else {
         keys.forEach((key) => {
-            entry[key] = [importList, entry[key]];
+            entry[key] = [importList, ...(Array.isArray(entry[key]) ? entry[key] : [entry[key]])];
         });
     }
     return entry;

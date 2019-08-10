@@ -60,7 +60,7 @@ builder.usePlugin([
     },{
         from: 'src/assets/font',
         to: 'assets/font'
-    }]),
+    },...option.assets]),
 ]);
 
 builder.useTSLoader(devPath.src);

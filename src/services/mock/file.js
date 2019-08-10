@@ -4,7 +4,7 @@ import Config from "@src/config";
 import mock from "./modal";
 export let file = [
   mock(
-    `${Config.Api.LocalBase}${Config.Api.Workflow.Path}${Config.Api.Workflow.FileApplyRecord}`,
+    `${Config.Api.Base}${Config.Api.File.GetInvalidCorrelationFiles}`,
     "get",
     {
       "Data|1-10": [
@@ -16,17 +16,20 @@ export let file = [
       ],
       StatusCode: 200
     }
-  ),
-  mock(
-    `${Config.Api.LocalBase}${Config.Api.Workflow.Path}${Config.Api.Workflow.FileApplyRecord}`,
+  ),mock(
+    `${Config.Api.Base}${Config.Api.File.GetInvalidCorrelationFiles}`,
     "post",
     (param) => {
       console.log(param);
       return {
-        "Data|1-10": [
+        Data: [
           {
-            "id|+1": 1,
-            name: "@name"
+            "id": 1,
+            name: "name"
+          },
+          {
+            "id": 2,
+            name: "name2"
           }
         ],
         StatusCode: 200

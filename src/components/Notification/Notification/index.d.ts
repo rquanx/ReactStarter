@@ -4,8 +4,8 @@ import {
 import {
   IDialogProps
 } from "office-ui-fabric-react/lib/Dialog";
-import {Mode} from "../Enum";
 
+import {Mode} from "../Enum";
 /**
  * @param {string} title 标题
  * @param {string} subText 内容

@@ -446,9 +446,13 @@ logQueue = [{
 ##### 启用
 
 1.config/index.js 中mock设为true
+此配置为是否打包Mock包，不打包不能进行Mock
 
 2.src/config/index.js中Config.Features.Mock设为true或在url后拼接mock=1参数
 
+Config.Features.Mock为true后必定启用,修改状态需要在打包出的js配置文件中修改
+
+url后拼接mock=1只在链接有相应参数时启用
 
 
 ##### 配置
@@ -456,37 +460,28 @@ logQueue = [{
 [Mock文档](<https://github.com/nuysoft/Mock/wiki>)
 
 1.在src/services/mock下根据示例创建对应的模板。
+```js
+
+export let template = [
+  mock("url","method",yourTemplate)
+]
+// yourTemplate为mock模板或函数，函数则需要返回自定义数据，模板无效
+```
 
 2.在src/services/mock/index.js中import模板并且添加到apiList中
-
-
-
-
-
-
-
-### SharePoint本地调试
-
-1、将config/index.js中SP.enable设为true
-2、config下的private.json中输入下列信息，如果没有private.json文件，可以手动创建
-
 ```js
-{
-  "siteUrl": "https://serviceme.sharepoint.com/sites/ExamplesAndLib",
-  "strategy": "UserCredentials", 
-  "username": "test001@serviceme.onmicrosoft.com",
-  "password": "1qaz@WSX"
-}
-// 以上为运行示例代码时需要使用的登录信息
-// strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials
-
+const apiList = [...file,...yourTemplate];
 ```
+
+
+
+
 
 ### vscode本地调试
 1、安装debugger for chrome插件
 2、配置lanuchjson
 
-```js
+ ```js
 {
       "type": "chrome",
       "request": "launch",
@@ -505,8 +500,25 @@ logQueue = [{
       }
   // {library}根据config进行配置
 ```
-
-3、修改config/index.js中的debug为true
+ 3、修改config/index.js中的debug为true
 4、cnpm run watch
 5、F5开始debug
+
+
+### SharePoint本地调试
+
+1、将config/index.js中SP.enable设为true
+2、config下的private.json中输入下列信息，如果没有private.json文件，可以手动创建
+
+```js
+{
+  "siteUrl": "https://serviceme.sharepoint.com/sites/ExamplesAndLib",
+  "strategy": "UserCredentials", 
+  "username": "test001@serviceme.onmicrosoft.com",
+  "password": "1qaz@WSX"
+}
+// 以上为运行示例代码时需要使用的登录信息
+// strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials
+
+```
 

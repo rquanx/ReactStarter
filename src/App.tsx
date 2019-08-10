@@ -9,7 +9,11 @@ import JSOM from "@services/jsom";
 import Caml from "@services/caml";
 import Config from "@config";
 import { T } from "@services/translation";
+import Axios from "axios";
 
+// fabric react icon initial
+import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
+initializeIcons("../assets/fonts/uifabric/");
 const Home = lazy(() => loadable(import(/* webpackChunkName: "Home" */ './pages/home')));
 const ErrorPage = lazy(() => loadable(import(/* webpackChunkName: "ErrorPage" */ './pages/error_page')));
 const ListCRUD = lazy(() => loadable(import(/* webpackChunkName: "ListCRUD" */ './pages/examples/列表增删查改')));
@@ -102,7 +106,7 @@ export class App extends React.Component<{}, IAppState> {
     }
 
     componentDidMount() {
-        this.onInitial()
+        // this.onInitial()
     }
 
     /**

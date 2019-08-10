@@ -1,3 +1,5 @@
+import {getCircularReplacer} from "./utils";
+
 /**
  * lajax
  * log + ajax 前端日志解决方案
@@ -15,7 +17,7 @@ function getAttributeList(queue) {
   return queue.map((item) => {
     return {
       Message: {
-        value: encodeURI(JSON.stringify(item.messages)),
+        value: encodeURI(JSON.stringify(item.messages,getCircularReplacer())),
         type: "Text"
       },
       Time: {
@@ -483,13 +485,13 @@ class Lajax {
         if (
           !this.JSOM &&
           navigator.sendBeacon &&
-          navigator.sendBeacon(this.url, JSON.stringify(this.queue))
+          navigator.sendBeacon(this.url, JSON.stringify(this.queue,getCircularReplacer()))
         ) {
           // 如果客户端支持sendBeacon，且预计能够成功发送数据，则清空队列
           this.queue = [];
         } else if (!this._isSecret()) {
           // 不支持sendBeacon，且不是无痕模式，则存入localStorage，下次进入页面时会自动发送一次日志
-          window.localStorage.setItem("lajax", JSON.stringify(this.queue));
+          window.localStorage.setItem("lajax", JSON.stringify(this.queue,getCircularReplacer()));
         } else {
           // 是无痕模式，只能尝试发送日志，成不成功就看造化了
           this._send();
@@ -565,7 +567,7 @@ class Lajax {
         "Content-Type",
         "application/json; charset=utf-8"
       );
-      this.xhrSend.call(this.xhr, this.customParams && typeof this.customParams === "function" ? this.customParams(JSON.stringify(this.queue)) : JSON.stringify(this.queue));
+      this.xhrSend.call(this.xhr, this.customParams && typeof this.customParams === "function" ? this.customParams(JSON.stringify(this.queue,getCircularReplacer())) : JSON.stringify(this.queue,getCircularReplacer()));
       this.xhr.onreadystatechange = () => {
         if (this.xhr.readyState === XMLHttpRequest.DONE) {
           if (this.xhr.status >= 200 && this.xhr.status < 400) {
