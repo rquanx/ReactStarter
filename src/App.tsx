@@ -106,7 +106,7 @@ export class App extends React.Component<{}, IAppState> {
     }
 
     componentDidMount() {
-        // this.onInitial()
+        this.onInitial()
     }
 
     /**

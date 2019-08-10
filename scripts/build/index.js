@@ -4,7 +4,7 @@
 //     port,
 // }
 
-function builderConfig(builder) {
+function builderConfig(builder,option) {
   return {
     entry: builder.entry,
     optimization: {
