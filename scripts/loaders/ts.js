@@ -14,7 +14,7 @@ function tsLoader(entry, plugins, loaders, path) {
     plugins.push(
         new HappyPack({
             id: 'ts',
-            threads: 3, // 默认3个
+            threads:  Object.keys(entry).length > 6 ? (Object.keys(entry).length / 2) : 3, // 默认3个
             loaders: [{
                 path: 'ts-loader',
                 query: {
