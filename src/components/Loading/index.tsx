@@ -37,25 +37,21 @@ function getNotificationInstance(
 /**
  * count为0 实例化一个loading模态框，否则加1
  */
-function notice() {
+function notice(message?: string) {
     const duration = defaultDuration;
     if (count === 0) {
-        // 确保没有实例时再创建实例
-        if (Object.getOwnPropertyNames(notificationInstance).length === 0) {
-            // 每次创建的实例都是不同的key,防止由于延迟删除后删除错误
             getNotificationInstance(
                 `key-${Date.now().toString()}`,
                 (notification) => {
                     notification.notice({
                         content:
-                            (<Loading visible={true} />),
+                            (<Loading visible={true} message={message} />),
                         duration,
                         key: `key-${Date.now().toString()}`,
                         closable: true,
                     });
                 },
             );
-        }
     }
     count++
 }
@@ -83,13 +79,15 @@ function hideAll() {
  */
 function hide() {
     count--;
-    if (count === 0) {
+    if (count < 1) {
         hideAll();
+        count = 0;
     }
 }
 
 Loading.show = notice;
 Loading.hide = hide;
 Loading.hideAll = hideAll;
+Loading.isLoading = () => count > 0;
 
 export default Loading;

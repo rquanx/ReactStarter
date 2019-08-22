@@ -5,12 +5,14 @@ import "./Loading.css";
 export interface ILoadingProps {
     visible?: boolean;
     children?: any;
+    message?: string;
 }
 
 export interface ILoading extends React.SFC<ILoadingProps> {
-    show?: () => void;
+    show?: (message?: string) => void;
     hide?: () => void;
     hideAll?: () => void;
+    isLoading?: () => boolean;
 }
 
 export let Loading: ILoading = (props: ILoadingProps) => {
@@ -22,13 +24,15 @@ export let Loading: ILoading = (props: ILoadingProps) => {
             containerClassName="sr-loading-modal"
         >
             <Spinner size={SpinnerSize.large} key="loading" className="sr-loading" />
+            {props.message ? <span>{props.message}</span> : null}
         </Modal>
     )
 }
 
 
-Loading.show = null;
-Loading.hide = null;
-Loading.hideAll = null;
+Loading.show = (message) => {throw "未初始化";};;
+Loading.hide = () => {throw "未初始化";};;
+Loading.hideAll = () => {throw "未初始化";};;
+Loading.isLoading = () => {throw "未初始化";};
 
 export default Loading;
