@@ -7,7 +7,8 @@
       ],
       "@components/*": ["src/components/*"],
       "@services/*": ["src/services/*"],
-      "@config": ["src/config"]
+      "@config": ["src/config"],
+      "@assets/*": ["src/assets/*"]
     },
     "outDir": "build/dist",
     "module": "esnext",
