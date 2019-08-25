@@ -10,6 +10,7 @@ import Caml from "@services/caml";
 import Config from "@config";
 import { T } from "@services/translation";
 import Axios from "axios";
+import img from "./assets/img/sr-logo.png";
 
 // fabric react icon initial
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";

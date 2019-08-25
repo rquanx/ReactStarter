@@ -123,4 +123,4 @@ builder.setProxy({
     : undefined
 });
 
-module.exports = smp.wrap(builder.Config(builderConfig));
+module.exports = smp.wrap(builder.Config(builderConfig,option));

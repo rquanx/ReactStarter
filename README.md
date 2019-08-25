@@ -505,7 +505,7 @@ const apiList = [...file,...yourTemplate];
         "meteor://💻app/*": "${webRoot}/*"
       }
   // {library}根据config进行配置
-```
+ ```
  3、修改config/index.js中的debug为true
 4、cnpm run watch
 5、F5开始debug
@@ -518,10 +518,10 @@ const apiList = [...file,...yourTemplate];
 
 ```js
 {
-  "siteUrl": "https://serviceme.sharepoint.com/sites/ExamplesAndLib",
+  "siteUrl": "",
   "strategy": "UserCredentials", 
-  "username": "test001@serviceme.onmicrosoft.com",
-  "password": "1qaz@WSX"
+  "username": "",
+  "password": ""
 }
 // 以上为运行示例代码时需要使用的登录信息
 // strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials

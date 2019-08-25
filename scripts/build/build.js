@@ -1,10 +1,4 @@
-// const port = 8080;
-// const RestProxy = require('sp-rest-proxy');
-// const setting = {
-//     port,
-// }
-
-function builderConfig(builder) {
+function builderConfig(builder,option) {
   return {
     entry: builder.entry,
     optimization: {

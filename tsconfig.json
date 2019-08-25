@@ -32,6 +32,7 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
+    "modules.d.ts",
     "src/**/*"
   ],
   "exclude": [
