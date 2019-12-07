@@ -9,8 +9,6 @@ import JSOM from "@services/jsom";
 import Caml from "@services/caml";
 import Config from "@config";
 import { T } from "@services/translation";
-import Axios from "axios";
-import img from "./assets/img/sr-logo.png";
 
 // fabric react icon initial
 import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
@@ -21,6 +19,7 @@ const ListCRUD = lazy(() => loadable(import(/* webpackChunkName: "ListCRUD" */ '
 const NewsDetailPage = lazy(() => loadable(import(/* webpackChunkName: "NewsDetailPage" */ './pages/examples/新闻详情')));
 const NewsListPage = lazy(() => loadable(import(/* webpackChunkName: "NewsListPage" */ './pages/examples/新闻列表')));
 const CarouselPage = lazy(() => loadable(import(/* webpackChunkName: "CarouselPage" */ './pages/examples/轮播图')));
+// const TestPage = lazy(() => loadable(import(/* webpackChunkName: "CarouselPage" */ './pages/examples/test')));
 
 export interface Info {
     userInfo: any;
@@ -74,7 +73,13 @@ export class App extends React.Component<{}, IAppState> {
                     url: '/html/App.html#/carousel-page',
                     icon: 'AspectRatio',
                     key: 'carousel-page'
-                }
+                },
+                // {
+                //     name: T('测试'),
+                //     url: '/html/App.html#/test-page',
+                //     icon: 'AspectRatio',
+                //     key: 'test-page'
+                // }
             ]
         }]
     }
@@ -95,7 +100,7 @@ export class App extends React.Component<{}, IAppState> {
                                 <Route path="/news-detail-page" component={NewsDetailPage}  ></Route>
                                 <Route path="/news-list-page" component={NewsListPage}  ></Route>
                                 <Route path="/carousel-page" component={CarouselPage}  ></Route>
-
+                                {/* <Route path="/test-page" component={TestPage}  ></Route> */}
                                 
                                 <Route component={ErrorPage} ></Route>
                             </Switch>

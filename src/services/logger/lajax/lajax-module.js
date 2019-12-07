@@ -1,4 +1,4 @@
-import {getCircularReplacer} from "./utils";
+import { getCircularReplacer } from "./utils";
 
 /**
  * lajax
@@ -13,11 +13,17 @@ function check(condiction, message) {
   }
 }
 
-function getAttributeList(queue) {
+function getUrl(url) {
+  return typeof url === "function" ? url() : url; 
+}
+
+function getAttributeList(queue, encode = true) {
   return queue.map((item) => {
     return {
       Message: {
-        value: encodeURI(JSON.stringify(item.messages,getCircularReplacer())),
+        value: encode
+          ? encodeURI(JSON.stringify(item.messages, getCircularReplacer()))
+          : JSON.stringify(item.messages, getCircularReplacer()),
         type: "Text"
       },
       Time: {
@@ -58,7 +64,7 @@ if (!("toJSON" in Error.prototype)) {
 class Lajax {
   /* eslint-disable no-console, no-bitwise*/
   /**
-   * @param {{JSOM: any,getFolderPath: any,url: string,autoLogError: boolean,autoLogRejection: boolean,autoLogAjax: boolean,logAjaxFilter: any,stylize: any,showDesc: any,customDesc: any,interval: number,maxErrorReq: number}} param
+   * @param {{JSOM: any,getFolderPath: any,url: string | function,autoLogError: boolean,autoLogRejection: boolean,autoLogAjax: boolean,logAjaxFilter: any,stylize: any,showDesc: any,customDesc: any,interval: number,maxErrorReq: number}} param
    */
   constructor(param) {
     let config = param;
@@ -74,7 +80,7 @@ class Lajax {
     } else if (typeof config === "object") {
       if (!param.JSOM) {
         check(
-          typeof param.url !== "string",
+          typeof param.url !== "string"  && typeof param.url !== "function",
           "log初始化错误 - 构造函数的参数 url 必须是一个字符串！"
         );
         check(
@@ -82,7 +88,7 @@ class Lajax {
             typeof param.logAjaxFilter !== "function",
           "log初始化错误 - 构造函数的参数 logAjaxFilter 必须是一个函数！"
         );
-  
+
         check(
           param.customDesc != null && typeof param.customDesc !== "function",
           "log初始化错误 - 构造函数的参数 customDesc 必须是一个函数！"
@@ -132,7 +138,7 @@ class Lajax {
     this.customDesc = config.customDesc;
 
     // 对发送的数据进行额外处理
-    this.customParams = config.customParams;
+    this.customQueue = config.customQueue;
 
     // 默认的间隔发送时间（毫秒）
     const defaultInterval = 10000;
@@ -152,6 +158,9 @@ class Lajax {
 
     // 日志队列
     this.queue = [];
+
+    // 默认对日志进行encode
+    this.encode = config.encode == null ? true : config.encode;
 
     // 发送日志请求的 xhr 对象
     this.xhr = null;
@@ -359,9 +368,7 @@ class Lajax {
   _resolveUrl(url) {
     const link = document.createElement("a");
     link.href = url;
-    return `${link.protocol}//${link.host}${link.pathname}${link.search}${
-      link.hash
-    }`;
+    return `${link.protocol}//${link.host}${link.pathname}${link.search}${link.hash}`;
   }
 
   /**
@@ -434,9 +441,7 @@ class Lajax {
                   msgs.push("接口请求失败！");
                 }
                 msgs.push(
-                  `请求耗时：${costTime}s URL：${this._lajaxUrl} 请求方式：${
-                    this._lajaxMethod
-                  }`
+                  `请求耗时：${costTime}s URL：${this._lajaxUrl} 请求方式：${this._lajaxMethod}`
                 );
                 if (this._lajaxMethod.toLowerCase() === "post") {
                   msgs.push("表单数据：", data);
@@ -485,13 +490,19 @@ class Lajax {
         if (
           !this.JSOM &&
           navigator.sendBeacon &&
-          navigator.sendBeacon(this.url, JSON.stringify(this.queue,getCircularReplacer()))
+          navigator.sendBeacon(
+            getUrl(this.url),
+            JSON.stringify(this.queue, getCircularReplacer())
+          )
         ) {
           // 如果客户端支持sendBeacon，且预计能够成功发送数据，则清空队列
           this.queue = [];
         } else if (!this._isSecret()) {
           // 不支持sendBeacon，且不是无痕模式，则存入localStorage，下次进入页面时会自动发送一次日志
-          window.localStorage.setItem("lajax", JSON.stringify(this.queue,getCircularReplacer()));
+          window.localStorage.setItem(
+            "lajax",
+            JSON.stringify(this.queue, getCircularReplacer())
+          );
         } else {
           // 是无痕模式，只能尝试发送日志，成不成功就看造化了
           this._send();
@@ -518,7 +529,7 @@ class Lajax {
   _sendByJSOM() {
     let that = this;
     let logCount = this.queue.length;
-    let attributeList = getAttributeList(this.queue);
+    let attributeList = getAttributeList(this.queue, this.encode);
 
     function sendSuccess(result) {
       // 日志发送成功，从队列中去除已发送的
@@ -541,11 +552,16 @@ class Lajax {
     }
 
     function sendError(result) {
-      that._printConsole(null, Lajax.levelEnum.error, `JSOM发送日志请求失败！`,result);
+      that._printConsole(
+        null,
+        Lajax.levelEnum.error,
+        `JSOM发送日志请求失败！`,
+        result
+      );
       that._checkErrorReq();
       return result;
     }
-    
+
     return this.JSOM.refresh()
       .createListItems(this.getFolderPath(), attributeList)
       .then(sendSuccess, sendError);
@@ -562,12 +578,20 @@ class Lajax {
 
     try {
       this.xhr = new XMLHttpRequest();
-      this.xhrOpen.call(this.xhr, "POST", this.url, true);
+      this.xhrOpen.call(this.xhr, "POST", getUrl(this.url), true);
       this.xhr.setRequestHeader(
         "Content-Type",
         "application/json; charset=utf-8"
       );
-      this.xhrSend.call(this.xhr, this.customParams && typeof this.customParams === "function" ? this.customParams(JSON.stringify(this.queue,getCircularReplacer())) : JSON.stringify(this.queue,getCircularReplacer()));
+      this.xhrSend.call(
+        this.xhr,
+        JSON.stringify(
+          this.customQueue && typeof this.customQueue === "function"
+            ? this.customQueue(this.queue)
+            : this.queue,
+          getCircularReplacer()
+        )
+      );
       this.xhr.onreadystatechange = () => {
         if (this.xhr.readyState === XMLHttpRequest.DONE) {
           if (this.xhr.status >= 200 && this.xhr.status < 400) {
@@ -594,9 +618,7 @@ class Lajax {
             this._printConsole(
               null,
               Lajax.levelEnum.error,
-              `发送日志请求失败！配置的接口地址：${this.url} 状态码：${
-                this.xhr.status
-              }`
+              `发送日志请求失败！配置的接口地址：${getUrl(this.url)} 状态码：${this.xhr.status}`
             );
             this._checkErrorReq();
           }
@@ -607,7 +629,7 @@ class Lajax {
       this._printConsole(
         null,
         Lajax.levelEnum.error,
-        `发送日志请求失败！配置的接口地址：${this.url}`
+        `发送日志请求失败！配置的接口地址：${getUrl(this.url)}`
       );
       this._checkErrorReq();
       this.xhr = null;
@@ -629,9 +651,7 @@ class Lajax {
       this._printConsole(
         null,
         Lajax.levelEnum.warn,
-        `发送日志请求的连续失败次数过多，已停止发送日志。请检查日志接口 ${
-          this.url
-        } 是否正常！`
+        `发送日志请求的连续失败次数过多，已停止发送日志。请检查日志接口 ${getUrl(this.url)} 是否正常！`
       );
     }
   }

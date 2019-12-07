@@ -87,9 +87,9 @@ class Builder {
     userMinimizer(minimizer) {
         pushList(this.minimizer, minimizer)
     }
-    Config(f,option = undefined) {
+    Config(f) {
         return (env, options) => {
-            this.config = f(this,option);
+            this.config = f(this);
             this.callList.forEach((fun) => {
                 fun(this.config, env, options);
             });

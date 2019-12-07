@@ -228,16 +228,10 @@ vscode提示错误可以在编辑器设置中增加以下内容
 
 
 
-#### 图片、字体图标处理
+#### 图片、图标处理
 
-##### 字体图标
-import 对应的css即可
-
-##### 图片
-```js
-import img from "assets/img.png";
-```
-10k以下会转换成base64
+可以打包字体图标和图片
+图片：10k以下会转换成base64
 
 
 
@@ -413,21 +407,25 @@ logQueue = [{
  *
  * autoLogError: 是否自动记录未捕获错误;
  *
- * autoLogRejection 是否自动记录 Promise 错误;
+ * autoLogRejection 是否自动记录预备;
  *
  * autoLogAjax: 是否自动记录ajax;
  *
+ * encode: 是否对日志信息进行encode，默认为true，上传到SP必须进行encode
+ *
  * logAjaxFilter: ajax日志过滤;
  *
- * stylize: console.log输出样式;
+ * stylize: 设置输出样式;
  *
- * showDesc: console.log描述信息;
+ * showDesc: 描述信息;
  *
  * customDesc: 自定义描述信息;
  *
  * interval: 日志发送周期;
  *
- * maxErrorReq: 日志发送最大试错数,错误次数超过后不再发送日志;
+ * maxErrorReq: 日志发送最大试错数;
+ *
+ * customQueue: 对Post的数组日志进行额外处理
  */
 ```
 
@@ -483,33 +481,6 @@ const apiList = [...file,...yourTemplate];
 
 
 
-### vscode本地调试
-1、安装debugger for chrome插件
-2、配置lanuchjson
-
- ```js
-{
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:8888",
-      "webRoot": "${workspaceFolder}",
-      "skipFiles": ["node_modules/**"],
-      "sourceMaps": true,
-      "disableNetworkCache": true,
-      "breakOnLoad": true,
-      "sourceMapPathOverrides": {
-        "webpack:///{library}/./*": "${webRoot}/*",
-        "webpack://{library}/./src/*": "${webRoot}/src/*",
-        "webpack://{library}/./node_modules/*": "${webRoot}/node_modules/*",
-        "meteor://💻app/*": "${webRoot}/*"
-      }
-  // {library}根据config进行配置
- ```
- 3、修改config/index.js中的debug为true
-4、cnpm run watch
-5、F5开始debug
-
 
 ### SharePoint本地调试
 
@@ -518,10 +489,10 @@ const apiList = [...file,...yourTemplate];
 
 ```js
 {
-  "siteUrl": "",
+  "siteUrl": "https://serviceme.sharepoint.com/sites/ExamplesAndLib",
   "strategy": "UserCredentials", 
-  "username": "",
-  "password": ""
+  "username": "test001@serviceme.onmicrosoft.com",
+  "password": "1qaz@WSX"
 }
 // 以上为运行示例代码时需要使用的登录信息
 // strategy的值SP Online为 UserCredentials,本地版为 OnpremiseUserCredentials

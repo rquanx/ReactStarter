@@ -79,23 +79,25 @@ logQueue = [{
  *
  * autoLogError: 是否自动记录未捕获错误;
  *
- * autoLogRejection 是否自动记录 Promise 错误;
+ * autoLogRejection 是否自动记录预备;
  *
  * autoLogAjax: 是否自动记录ajax;
  *
+ * encode: 是否对日志信息进行encode，默认为true，上传到SP必须进行encode
+ *
  * logAjaxFilter: ajax日志过滤;
  *
- * stylize: console.log输出样式;
+ * stylize: 设置输出样式;
  *
- * showDesc: console.log描述信息;
+ * showDesc: 描述信息;
  *
  * customDesc: 自定义描述信息;
  *
  * interval: 日志发送周期;
  *
- * maxErrorReq: 日志发送最大试错数,错误次数超过后不再发送日志;
+ * maxErrorReq: 日志发送最大试错数;
  *
- * customParams: 对Post的数组日志进行额外处理
+ * customQueue: 对Post的数组日志进行额外处理
  */
 ```
 

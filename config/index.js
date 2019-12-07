@@ -22,12 +22,20 @@ let config = {
       // "/_layouts/15/sp.js"
     ]
   },
+  proxy: undefined,
+  // {
+  // 	"/api": {
+  // 		target: "http://58.62.172.142:9980/CRMAPI",
+  // 		pathRewrite: { "^/api": "" }
+  // 	}
+  // },
   // build 根据配置打包
   template: {
     enable: true, // 是否启用模板生成，没改动时关闭，加快打包
     scripts: [`../dll/{library}.dll.js`], // 注入到模板的scripts
-    css: ["../assets/css/Common.css"] // 注入到模板的css
+    css: [] // 注入到模板的css
   },
+  version: "0.0.1",
   port: 8888, // 本地启用端口
   // 要复制的资源
   assets: [
@@ -48,13 +56,12 @@ let config = {
       to: "assets/fonts/uifabric/"
     }
   ],
-  library: "Test", // 项目打包的lib名
+  library: "ServicesReact", // 项目打包的lib名
   publicPath: "../", // 公共路径，按需加载、图片请求、字体请求会根据此路径,相对html页面得相对路径,必须以 "/" 结束
   mock: false, // 是否打包mock
-  debug: false, // 启用vscode debug模式，需配置launch.json
   polyfill: true, // 是否打包polyfill
   analyzer: false, // 是否启动打包分析,打包结束会启动浏览器显示各个包的大小
-  typeCheck: false, // 是否启动打包类型检查
+  typeCheck: true, // 是否启动打包类型检查
   dll: [
     ...new Set([
       // dll要打包的模块,将引入的第三方模块写入数组中,

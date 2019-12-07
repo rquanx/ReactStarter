@@ -1,8 +1,10 @@
 const option = require("../config");
-const path = require("path");
 const webpack = require("webpack");
 const devPath = require("./path");
 const RestProxy = require("sp-rest-proxy");
+require("./tool/version").setVersion(option.version,`${devPath.src}/config/index.js`,devPath.build);
+
+
 // 缓存,待使用
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 
@@ -103,8 +105,7 @@ option.template.enable &&
 option.typeCheck &&
   builder.usePlugin(
     new ForkTsCheckerWebpackPlugin({
-      checkSyntacticErrors: true
-    })
+      checkSyntacticErrors: true,    })
   );
 option.polyfill && builder.globalImport("@babel/polyfill");
 option.analyzer && builder.usePlugin(new BundleAnalyzerPlugin());
@@ -123,4 +124,4 @@ builder.setProxy({
     : undefined
 });
 
-module.exports = smp.wrap(builder.Config(builderConfig,option));
+module.exports = smp.wrap(builder.Config(builderConfig));

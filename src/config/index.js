@@ -7,6 +7,10 @@ let env = EnvType.Develop;
 
 
 let Config = {
+    APP: {
+		Version: "0.0.2",
+		Release: env === EnvType.Product
+	},
     Api: {
         Base: env === EnvType.Develop ? "http://192.168.20.47:8011/" : "",
         File: {
