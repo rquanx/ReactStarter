@@ -43,9 +43,12 @@ let builder = new Builder(
     : devPath.pages
 );
 
-builder.useLoader(require("./loaders/style"));
-builder.useLoader(require("./loaders/img"));
-builder.useLoader(require("./loaders/font"));
+builder.useLoader([
+  require("./loaders/style").normal,
+  require("./loaders/style").modules,
+  require("./loaders/img"),
+  require("./loaders/font")
+]);
 builder.usePlugin([
   new WebpackBar(),
   new webpack.NamedModulesPlugin(),

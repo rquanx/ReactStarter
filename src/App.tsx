@@ -5,9 +5,6 @@ import { loadable } from "@services/common";
 import "./App.css";
 import Menu from "@components/Menu";
 import Header from "@components/Header";
-import JSOM from "@services/jsom";
-import Caml from "@services/caml";
-import Config from "@config";
 import { T } from "@services/translation";
 
 // fabric react icon initial
@@ -15,22 +12,8 @@ import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
 initializeIcons("../assets/fonts/uifabric/");
 const Home = lazy(() => loadable(import(/* webpackChunkName: "Home" */ './pages/home')));
 const ErrorPage = lazy(() => loadable(import(/* webpackChunkName: "ErrorPage" */ './pages/error_page')));
-const ListCRUD = lazy(() => loadable(import(/* webpackChunkName: "ListCRUD" */ './pages/examples/列表增删查改')));
-const NewsDetailPage = lazy(() => loadable(import(/* webpackChunkName: "NewsDetailPage" */ './pages/examples/新闻详情')));
-const NewsListPage = lazy(() => loadable(import(/* webpackChunkName: "NewsListPage" */ './pages/examples/新闻列表')));
-const CarouselPage = lazy(() => loadable(import(/* webpackChunkName: "CarouselPage" */ './pages/examples/轮播图')));
-// const TestPage = lazy(() => loadable(import(/* webpackChunkName: "CarouselPage" */ './pages/examples/test')));
 
-export interface Info {
-    userInfo: any;
-    user: User;
-    isShow: boolean;
-    message?: string;
-}
-interface User {
-    Title: string;
-    ID: string;
-}
+
 interface IAppState {
     info: any
 }
@@ -74,12 +57,6 @@ export class App extends React.Component<{}, IAppState> {
                     icon: 'AspectRatio',
                     key: 'carousel-page'
                 },
-                // {
-                //     name: T('测试'),
-                //     url: '/html/App.html#/test-page',
-                //     icon: 'AspectRatio',
-                //     key: 'test-page'
-                // }
             ]
         }]
     }
@@ -96,89 +73,13 @@ export class App extends React.Component<{}, IAppState> {
                         <Suspense fallback={<Loading />}  >
                             <Switch>
                                 <Route exact path="/" component={Home} ></Route>
-                                <Route path="/listCRUD" component={ListCRUD}  ></Route>
-                                <Route path="/news-detail-page" component={NewsDetailPage}  ></Route>
-                                <Route path="/news-list-page" component={NewsListPage}  ></Route>
-                                <Route path="/carousel-page" component={CarouselPage}  ></Route>
-                                {/* <Route path="/test-page" component={TestPage}  ></Route> */}
-                                
                                 <Route component={ErrorPage} ></Route>
                             </Switch>
                         </Suspense>
                     </div>
-
                 </div>
             </HashRouter>)
     }
 
-    componentDidMount() {
-        this.onInitial()
-    }
-
-    /**
-     * 初始化页面
-     */
-    async onInitial() {
-        let info: Info = {
-            user: undefined,
-            userInfo: undefined,
-            message: "",
-            isShow: false,
-        };
-        try {
-            let userInfo = await this.getUserInfo();
-            info = await this.getSiteUserInfo(userInfo);
-            console.log(info)
-            this.setState({
-                info
-            });
-        }
-        catch (e) {
-            console.log(e + "初始化失败");
-            info.message = e + "初始化失败";
-        }
-    }
-
-    /**
-     * 获取当前用户
-     */
-    async getUserInfo() {
-        try {
-            let info = await JSOM.create("", "").getCurrentUser();
-            let user = {
-                Title: info.data.get_title(),
-                ID: info.data.get_id()
-            }
-            return {
-                user
-            }
-        }
-        catch (e) {
-            throw ("get UserInfo error")
-        }
-    }
-
-    /**
-     * 获取用户信息
-     * @param data 
-     */
-    async getSiteUserInfo(data) {
-        try {
-            let result = await JSOM.create("", "").getSiteUserInfo(Caml.Express().And("Eq", "ID", "Text", data.user.ID).End());
-            if (result.data.data.length > 0) {
-                data["userInfo"] = result.data.data[0];
-                if (result.data.data[0].Picture) {
-                    data["userInfo"].PicUrl = result.data.data[0].Picture.get_url();
-                }
-                else {
-                    data["userInfo"].PicUrl = Config.File.Img.Path + "/sr-personal-photo.png";
-                }
-            }
-            return data;
-        }
-        catch (e) {
-            throw ("getSiteUserInfo error");
-        }
-    }
 }
 export default App;
