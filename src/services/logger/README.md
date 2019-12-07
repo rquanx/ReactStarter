@@ -79,7 +79,7 @@ logQueue = [{
  *
  * autoLogError: 是否自动记录未捕获错误;
  *
- * autoLogRejection 是否自动记录预备;
+ * autoLogRejection 是否自动记录 Promise 错误;
  *
  * autoLogAjax: 是否自动记录ajax;
  *
@@ -87,9 +87,9 @@ logQueue = [{
  *
  * logAjaxFilter: ajax日志过滤;
  *
- * stylize: 设置输出样式;
+ * stylize: 设置console.log输出样式;
  *
- * showDesc: 描述信息;
+ * showDesc: console.log描述信息;
  *
  * customDesc: 自定义描述信息;
  *

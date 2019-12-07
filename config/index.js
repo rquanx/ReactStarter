@@ -56,7 +56,7 @@ let config = {
       to: "assets/fonts/uifabric/"
     }
   ],
-  library: "ServicesReact", // 项目打包的lib名
+  library: "React", // 项目打包的lib名
   publicPath: "../", // 公共路径，按需加载、图片请求、字体请求会根据此路径,相对html页面得相对路径,必须以 "/" 结束
   mock: false, // 是否打包mock
   polyfill: true, // 是否打包polyfill

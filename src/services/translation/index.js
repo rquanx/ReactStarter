@@ -15,7 +15,7 @@ export function inital() {
   let keyList = location.pathname.split(".")[0].split("/");
   [
     ...keyList,
-    ...Object.keys(searchArg).map((item) => searchArg[item]),
+    ...Object.keys(searchArg).map(item => searchArg[item]),
     ...location.hash.split("/")
   ].forEach(function(item) {
     let temResult = Current[item];
@@ -39,7 +39,7 @@ export function T(key, param = {}) {
     result = key;
   }
   let keys = Object.keys(param);
-  keys.forEach((k) => {
+  keys.forEach(k => {
     result = result.replace(`{${k}}`, param[k]);
   });
   // 查找common
