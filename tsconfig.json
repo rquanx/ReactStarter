@@ -2,13 +2,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@src*": [
-        "src/*"
-      ],
       "@components/*": ["src/components/*"],
       "@services/*": ["src/services/*"],
-      "@config": ["src/config"],
-      "@assets/*": ["src/assets/*"]
+      "@config/*": ["src/config/*"],
+      "@assets/*": ["src/assets/*"] 
+      ,"@src/*": [
+        "src/*"
+      ],
     },
     "outDir": "build/dist",
     "module": "esnext",
